@@ -63,17 +63,17 @@ run "integration_test_complete_lambda" {
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.lambda] : r if r != null]) > 0
+    condition     = length(aws_iam_role.lambda) > 0
     error_message = "IAM role should be created"
   }
 
   assert {
-    condition     = length([for a in [aws_lambda_alias.this] : a if a != null]) > 0
+    condition     = length(aws_lambda_alias.this) > 0
     error_message = "Lambda alias should be created"
   }
 
   assert {
-    condition     = length([for lg in [aws_cloudwatch_log_group.lambda] : lg if lg != null]) > 0
+    condition     = length(aws_cloudwatch_log_group.lambda) > 0
     error_message = "CloudWatch log group should be created"
   }
 
@@ -110,7 +110,7 @@ run "integration_test_minimal_lambda" {
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.lambda] : r if r != null]) > 0
+    condition     = length(aws_iam_role.lambda) > 0
     error_message = "IAM role should be created by default"
   }
 }
@@ -157,7 +157,7 @@ run "integration_test_without_log_group" {
 
   # Verify log group is not created
   assert {
-    condition     = length([for lg in [aws_cloudwatch_log_group.lambda] : lg if lg != null]) == 0
+    condition     = length(aws_cloudwatch_log_group.lambda) == 0
     error_message = "CloudWatch log group should not be created when create_log_group is false"
   }
 }
@@ -175,7 +175,7 @@ run "integration_test_without_alias" {
 
   # Verify alias is not created
   assert {
-    condition     = length([for a in [aws_lambda_alias.this] : a if a != null]) == 0
+    condition     = length(aws_lambda_alias.this) == 0
     error_message = "Lambda alias should not be created when create_alias is false"
   }
 }
@@ -199,7 +199,7 @@ run "integration_test_with_external_role" {
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.lambda] : r if r != null]) == 0
+    condition     = length(aws_iam_role.lambda) == 0
     error_message = "IAM role should not be created when using external role"
   }
 }

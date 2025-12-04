@@ -101,7 +101,7 @@ run "test_iam_role_creation" {
 
   # Verify IAM role is created
   assert {
-    condition     = length([for r in [aws_iam_role.lambda] : r if r != null]) > 0
+    condition     = length(aws_iam_role.lambda) > 0
     error_message = "IAM role should be created when create_role is true"
   }
 
@@ -112,7 +112,7 @@ run "test_iam_role_creation" {
 
   # Verify basic execution role policy is attached
   assert {
-    condition     = length([for a in [aws_iam_role_policy_attachment.lambda_basic] : a if a != null]) > 0
+    condition     = length(aws_iam_role_policy_attachment.lambda_basic) > 0
     error_message = "Basic execution role policy should be attached"
   }
 }
@@ -137,7 +137,7 @@ run "test_external_iam_role" {
 
   # Verify no IAM role is created
   assert {
-    condition     = length([for r in [aws_iam_role.lambda] : r if r != null]) == 0
+    condition     = length(aws_iam_role.lambda) == 0
     error_message = "IAM role should not be created when create_role is false"
   }
 }
@@ -174,7 +174,7 @@ run "test_vpc_configuration" {
 
   # Verify VPC execution role policy is attached
   assert {
-    condition     = length([for a in [aws_iam_role_policy_attachment.lambda_vpc] : a if a != null]) > 0
+    condition     = length(aws_iam_role_policy_attachment.lambda_vpc) > 0
     error_message = "VPC execution role policy should be attached"
   }
 }
@@ -267,7 +267,7 @@ run "test_alias_creation" {
 
   # Verify alias is created
   assert {
-    condition     = length([for a in [aws_lambda_alias.this] : a if a != null]) > 0
+    condition     = length(aws_lambda_alias.this) > 0
     error_message = "Lambda alias should be created when create_alias is true"
   }
 
@@ -296,7 +296,7 @@ run "test_cloudwatch_log_group" {
 
   # Verify CloudWatch log group is created
   assert {
-    condition     = length([for lg in [aws_cloudwatch_log_group.lambda] : lg if lg != null]) > 0
+    condition     = length(aws_cloudwatch_log_group.lambda) > 0
     error_message = "CloudWatch log group should be created when create_log_group is true"
   }
 
