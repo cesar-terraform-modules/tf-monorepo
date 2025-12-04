@@ -1,0 +1,6 @@
+# Trivy Ignore File
+# Add vulnerability IDs or misconfigurations to ignore (with justification)
+# Example:
+# AVD-AWS-0086  # Justification: This is a known false positive for our use case
+
+# Currently no ignores - all security issues should be addressed

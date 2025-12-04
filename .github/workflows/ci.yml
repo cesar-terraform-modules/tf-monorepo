@@ -1,0 +1,132 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  terraform-fmt:
+    name: Terraform Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Check Terraform formatting
+        run: |
+          echo "Checking Terraform formatting across all modules..."
+          terraform fmt -check -recursive -diff
+          if [ $? -eq 0 ]; then
+            echo "✅ All Terraform files are properly formatted"
+          else
+            echo "❌ Some Terraform files are not properly formatted"
+            echo "Run 'terraform fmt -recursive' to fix formatting issues"
+            exit 1
+          fi
+
+  terraform-tests:
+    name: Terraform Module Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module:
+          - s3-private-bucket
+          - dynamodb-global-table
+          - lambda-function
+          - fargate-ecs-bluegreen
+      fail-fast: false
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Initialize Terraform module
+        run: |
+          cd modules/${{ matrix.module }}
+          terraform init
+
+      - name: Run Terraform tests
+        run: |
+          cd modules/${{ matrix.module }}
+          terraform test
+          echo "✅ All tests passed for ${{ matrix.module }}"
+
+  trivy-security-scan:
+    name: Security Scan (Trivy)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          trivyignores: '.trivyignore'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  ci-summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [terraform-fmt, terraform-tests, trivy-security-scan]
+    if: always()
+    steps:
+      - name: Check job results
+        run: |
+          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.terraform-fmt.result }}" == "success" ]; then
+            echo "✅ Terraform Format Check: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Terraform Format Check: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.terraform-tests.result }}" == "success" ]; then
+            echo "✅ Terraform Module Tests: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Terraform Module Tests: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.trivy-security-scan.result }}" == "success" ]; then
+            echo "✅ Security Scan (Trivy): Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Security Scan (Trivy): Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Fail this job if any of the required jobs failed
+          if [ "${{ needs.terraform-fmt.result }}" != "success" ] || \
+             [ "${{ needs.terraform-tests.result }}" != "success" ] || \
+             [ "${{ needs.trivy-security-scan.result }}" != "success" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ CI Pipeline Failed - Please review the failed jobs above" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All CI checks passed successfully!" >> $GITHUB_STEP_SUMMARY
+          fi
