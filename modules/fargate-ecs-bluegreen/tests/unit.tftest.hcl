@@ -37,7 +37,7 @@ run "test_basic_ecs_service" {
 
   # Verify cluster is created by default
   assert {
-    condition     = length([for c in [aws_ecs_cluster.this] : c if c != null]) > 0
+    condition     = length(aws_ecs_cluster.this) > 0
     error_message = "ECS cluster should be created when create_cluster is true (default)"
   }
 
@@ -141,7 +141,7 @@ run "test_existing_cluster" {
 
   # Verify cluster is not created
   assert {
-    condition     = length([for c in [aws_ecs_cluster.this] : c if c != null]) == 0
+    condition     = length(aws_ecs_cluster.this) == 0
     error_message = "ECS cluster should not be created when create_cluster is false"
   }
 }
@@ -168,12 +168,12 @@ run "test_container_insights" {
 
   # Verify container insights is enabled
   assert {
-    condition     = aws_ecs_cluster.this[0].setting[0].name == "containerInsights"
+    condition     = length([for s in aws_ecs_cluster.this[0].setting : s if s.name == "containerInsights"]) > 0
     error_message = "Container Insights setting should be configured"
   }
 
   assert {
-    condition     = aws_ecs_cluster.this[0].setting[0].value == "enabled"
+    condition     = [for s in aws_ecs_cluster.this[0].setting : s.value if s.name == "containerInsights"][0] == "enabled"
     error_message = "Container Insights should be enabled"
   }
 }
@@ -200,7 +200,7 @@ run "test_execution_role_creation" {
 
   # Verify execution role is created
   assert {
-    condition     = length([for r in [aws_iam_role.execution] : r if r != null]) > 0
+    condition     = length(aws_iam_role.execution) > 0
     error_message = "Execution role should be created when create_execution_role is true"
   }
 }
@@ -227,7 +227,7 @@ run "test_task_role_creation" {
 
   # Verify task role is created
   assert {
-    condition     = length([for r in [aws_iam_role.task] : r if r != null]) > 0
+    condition     = length(aws_iam_role.task) > 0
     error_message = "Task role should be created when create_task_role is true"
   }
 }
@@ -268,12 +268,12 @@ run "test_external_roles" {
 
   # Verify roles are not created
   assert {
-    condition     = length([for r in [aws_iam_role.execution] : r if r != null]) == 0
+    condition     = length(aws_iam_role.execution) == 0
     error_message = "Execution role should not be created when using external role"
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.task] : r if r != null]) == 0
+    condition     = length(aws_iam_role.task) == 0
     error_message = "Task role should not be created when using external role"
   }
 }
@@ -344,12 +344,12 @@ run "test_load_balancer_configuration" {
   }
 
   assert {
-    condition     = aws_ecs_service.this.load_balancer[0].container_name == "app"
+    condition     = [for lb in aws_ecs_service.this.load_balancer : lb.container_name if lb.container_name == "app"][0] == "app"
     error_message = "Load balancer container name should be 'app'"
   }
 
   assert {
-    condition     = aws_ecs_service.this.load_balancer[0].container_port == 8080
+    condition     = [for lb in aws_ecs_service.this.load_balancer : lb.container_port if lb.container_name == "app"][0] == 8080
     error_message = "Load balancer container port should be 8080"
   }
 }
@@ -446,12 +446,12 @@ run "test_blue_green_deployment_enabled" {
 
   # Verify CodeDeploy resources are created
   assert {
-    condition     = length([for app in [aws_codedeploy_app.this] : app if app != null]) > 0
+    condition     = length(aws_codedeploy_app.this) > 0
     error_message = "CodeDeploy application should be created when blue-green deployment is enabled"
   }
 
   assert {
-    condition     = length([for dg in [aws_codedeploy_deployment_group.this] : dg if dg != null]) > 0
+    condition     = length(aws_codedeploy_deployment_group.this) > 0
     error_message = "CodeDeploy deployment group should be created when blue-green deployment is enabled"
   }
 }
@@ -478,7 +478,7 @@ run "test_blue_green_deployment_disabled" {
 
   # Verify CodeDeploy resources are not created
   assert {
-    condition     = length([for app in [aws_codedeploy_app.this] : app if app != null]) == 0
+    condition     = length(aws_codedeploy_app.this) == 0
     error_message = "CodeDeploy application should not be created when blue-green deployment is disabled"
   }
 }

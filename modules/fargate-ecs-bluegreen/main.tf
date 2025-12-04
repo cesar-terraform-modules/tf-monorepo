@@ -141,25 +141,28 @@ resource "aws_codedeploy_deployment_group" "this" {
     service_name = aws_ecs_service.this.name
   }
 
-  load_balancer_info {
-    target_group_pair_info {
-      prod_traffic_route {
-        listener_arns = var.codedeploy_listener_arns
-      }
-
-      dynamic "test_traffic_route" {
-        for_each = var.codedeploy_test_listener_arns != null ? [1] : []
-        content {
-          listener_arns = var.codedeploy_test_listener_arns
+  dynamic "load_balancer_info" {
+    for_each = var.codedeploy_blue_target_group_name != null && var.codedeploy_green_target_group_name != null ? [1] : []
+    content {
+      target_group_pair_info {
+        prod_traffic_route {
+          listener_arns = var.codedeploy_listener_arns
         }
-      }
 
-      target_group {
-        name = var.codedeploy_blue_target_group_name
-      }
+        dynamic "test_traffic_route" {
+          for_each = var.codedeploy_test_listener_arns != null ? [1] : []
+          content {
+            listener_arns = var.codedeploy_test_listener_arns
+          }
+        }
 
-      target_group {
-        name = var.codedeploy_green_target_group_name
+        target_group {
+          name = var.codedeploy_blue_target_group_name
+        }
+
+        target_group {
+          name = var.codedeploy_green_target_group_name
+        }
       }
     }
   }
@@ -168,11 +171,39 @@ resource "aws_codedeploy_deployment_group" "this" {
 }
 
 # IAM roles
+locals {
+  ecs_task_assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+
+  codedeploy_assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "codedeploy.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role" "execution" {
   count = var.create_execution_role ? 1 : 0
 
   name               = "${var.task_family}-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role[0].json
+  assume_role_policy = local.ecs_task_assume_role_policy
 
   tags = var.tags
 }
@@ -181,22 +212,9 @@ resource "aws_iam_role" "task" {
   count = var.create_task_role ? 1 : 0
 
   name               = "${var.task_family}-task-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role[0].json
+  assume_role_policy = local.ecs_task_assume_role_policy
 
   tags = var.tags
-}
-
-data "aws_iam_policy_document" "ecs_task_assume_role" {
-  count = var.create_execution_role || var.create_task_role ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "execution_policy" {
@@ -217,22 +235,9 @@ resource "aws_iam_role" "codedeploy" {
   count = var.enable_blue_green_deployment && var.create_codedeploy_role ? 1 : 0
 
   name               = "${var.service_name}-codedeploy-role"
-  assume_role_policy = data.aws_iam_policy_document.codedeploy_assume_role[0].json
+  assume_role_policy = local.codedeploy_assume_role_policy
 
   tags = var.tags
-}
-
-data "aws_iam_policy_document" "codedeploy_assume_role" {
-  count = var.enable_blue_green_deployment && var.create_codedeploy_role ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["codedeploy.amazonaws.com"]
-    }
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
