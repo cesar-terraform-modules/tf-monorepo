@@ -284,3 +284,18 @@ Available deployment configurations:
 - `CodeDeployDefault.ECSCanary10Percent5Minutes` - Shifts 10%, waits 5 min, then remaining 90%
 - `CodeDeployDefault.ECSCanary10Percent15Minutes` - Shifts 10%, waits 15 min, then remaining 90%
 - `CodeDeployDefault.ECSAllAtOnce` - Shifts all traffic at once
+
+## Testing
+
+This module includes comprehensive test coverage:
+
+- **Unit tests**: Validate ECS cluster creation, task definitions, service configuration, IAM roles, load balancing, service discovery, ECS Exec, blue/green deployment setup, and tag application
+- **Integration tests**: Test complete Fargate deployments with multiple containers, EFS volumes, service discovery, and various deployment configurations
+
+Run tests:
+```bash
+cd modules/fargate-ecs-bluegreen
+terraform test
+```
+
+See [TESTING.md](../../TESTING.md) for detailed testing instructions.

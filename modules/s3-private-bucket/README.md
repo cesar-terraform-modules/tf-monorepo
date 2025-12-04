@@ -69,3 +69,18 @@ module "private_bucket" {
 | bucket_arn | The ARN of the bucket |
 | bucket_domain_name | The bucket domain name |
 | bucket_regional_domain_name | The bucket region-specific domain name |
+
+## Testing
+
+This module includes comprehensive test coverage:
+
+- **Unit tests**: Validate module configuration, encryption settings, versioning, lifecycle rules, and tag application
+- **Integration tests**: Test complete bucket deployments with various configurations
+
+Run tests:
+```bash
+cd modules/s3-private-bucket
+terraform test
+```
+
+See [TESTING.md](../../TESTING.md) for detailed testing instructions.

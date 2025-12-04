@@ -193,8 +193,29 @@ module-name/
 ├── main.tf         # Main resource definitions
 ├── variables.tf    # Input variable declarations
 ├── outputs.tf      # Output value declarations
-└── README.md       # Module documentation
+├── README.md       # Module documentation
+└── tests/          # Terraform/OpenTofu test files
+    ├── unit.tftest.hcl        # Unit tests
+    └── integration.tftest.hcl # Integration tests
 ```
+
+## Testing
+
+All modules include comprehensive test suites using Terraform's native testing framework. Tests validate module configurations and ensure functionality.
+
+**Quick Start:**
+```bash
+# Test a specific module
+cd modules/s3-private-bucket
+terraform test
+
+# Test all modules
+for module in modules/*/; do
+  terraform -chdir="${module}" test
+done
+```
+
+For detailed testing instructions, test coverage, and writing new tests, see [TESTING.md](./TESTING.md).
 
 ## Contributing
 
@@ -204,6 +225,8 @@ When adding new modules:
 3. Use descriptive variable names and include descriptions
 4. Tag all resources appropriately
 5. Include usage examples
+6. **Write comprehensive unit and integration tests**
+7. Ensure all tests pass before submitting
 
 ## License
 

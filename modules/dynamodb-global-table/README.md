@@ -121,3 +121,18 @@ module "global_users_table" {
 | table_arn | The ARN of the table |
 | table_stream_arn | The ARN of the table stream |
 | table_stream_label | The timestamp of the table stream |
+
+## Testing
+
+This module includes comprehensive test coverage:
+
+- **Unit tests**: Validate table configuration, billing modes, GSI setup, multi-region replication, encryption, PITR, TTL, and tag application
+- **Integration tests**: Test complete global table deployments with various configurations including multi-region setups
+
+Run tests:
+```bash
+cd modules/dynamodb-global-table
+terraform test
+```
+
+See [TESTING.md](../../TESTING.md) for detailed testing instructions.
