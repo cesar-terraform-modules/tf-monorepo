@@ -1,6 +1,9 @@
 # Local .terraform directories
 .terraform/
 
+# Lock files - users should generate their own based on their Terraform version
+.terraform.lock.hcl
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
