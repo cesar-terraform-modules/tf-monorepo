@@ -14,6 +14,15 @@ This module creates an AWS ECS Fargate service with optional CodeDeploy blue/gre
 - **EFS volume support**: Mount EFS volumes to containers
 - **Flexible deployment configurations**: Multiple CodeDeploy deployment strategies
 
+## Important Notes
+
+When using blue/green deployments (`enable_blue_green_deployment = true`), you must provide:
+- `codedeploy_listener_arns` - Production listener ARNs
+- `codedeploy_blue_target_group_name` - Blue target group name
+- `codedeploy_green_target_group_name` - Green target group name
+
+These resources must be created separately (e.g., ALB/NLB with two target groups).
+
 ## Usage
 
 ### Basic Fargate service without blue/green

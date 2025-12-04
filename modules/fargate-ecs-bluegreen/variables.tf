@@ -223,13 +223,13 @@ variable "codedeploy_test_listener_arns" {
 }
 
 variable "codedeploy_blue_target_group_name" {
-  description = "Name of the blue target group"
+  description = "Name of the blue target group. Required when enable_blue_green_deployment is true"
   type        = string
   default     = null
 }
 
 variable "codedeploy_green_target_group_name" {
-  description = "Name of the green target group"
+  description = "Name of the green target group. Required when enable_blue_green_deployment is true"
   type        = string
   default     = null
 }
