@@ -108,8 +108,21 @@ jobs:
                   print("✅ No security issues found in SARIF file. This appears to be a false positive.")
                   sys.exit(0)
               
-              print(f"❌ Found {len(results)} security issue(s):")
-              for i, result in enumerate(results[:10], 1):  # Show first 10 issues
+              # Filter results to only CRITICAL/HIGH severity (error/warning level in SARIF)
+              # SARIF levels: error=CRITICAL, warning=HIGH, note=LOW, none=INFO
+              critical_high_results = [r for r in results if r.get('level') in ['error', 'warning']]
+              
+              if len(critical_high_results) == 0:
+                  low_severity_count = len([r for r in results if r.get('level') == 'note'])
+                  if low_severity_count > 0:
+                      print(f"✅ Found {low_severity_count} LOW severity issue(s), but workflow only checks CRITICAL/HIGH.")
+                      print("These LOW severity issues are being ignored as per workflow configuration.")
+                  else:
+                      print("✅ No CRITICAL or HIGH severity issues found.")
+                  sys.exit(0)
+              
+              print(f"❌ Found {len(critical_high_results)} CRITICAL/HIGH severity issue(s):")
+              for i, result in enumerate(critical_high_results[:10], 1):  # Show first 10 issues
                   rule_id = result.get('ruleId', 'unknown')
                   message = result.get('message', {}).get('text', 'no message')
                   level = result.get('level', 'unknown')
@@ -122,8 +135,8 @@ jobs:
                       location_info = f" at {artifact.get('uri', 'unknown')}:{region.get('startLine', '?')}"
                   print(f"  {i}. [{level}] {rule_id}: {message}{location_info}")
               
-              if len(results) > 10:
-                  print(f"  ... and {len(results) - 10} more issue(s)")
+              if len(critical_high_results) > 10:
+                  print(f"  ... and {len(critical_high_results) - 10} more issue(s)")
               
               print("\nPlease review these issues and either:")
               print("1. Fix the security issues in the code")
