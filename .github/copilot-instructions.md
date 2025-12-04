@@ -258,7 +258,7 @@ When modifying a module, always update:
 - Usage examples if interface changed
 
 ## Additional Resources
-- [Terraform Documentation](https://www.terraform.io/docs)
-- [Terraform Style Guide](https://www.terraform.io/docs/language/syntax/style.html)
+- [Terraform Documentation](https://developer.hashicorp.com/terraform/docs)
+- [Terraform Style Guide](https://developer.hashicorp.com/terraform/language/style)
 - [Terraform Best Practices](https://www.terraform-best-practices.com/)
-- [HCL Configuration Syntax](https://www.terraform.io/docs/language/syntax/configuration.html)
+- [HCL Configuration Syntax](https://developer.hashicorp.com/terraform/language/syntax/configuration)
