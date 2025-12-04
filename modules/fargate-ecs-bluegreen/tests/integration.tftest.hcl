@@ -1,3 +1,11 @@
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
+
 # Integration tests for fargate-ecs-bluegreen module
 # These tests validate the module with actual AWS provider (or mocked provider)
 
@@ -5,7 +13,7 @@ run "integration_test_complete_fargate_service" {
   command = plan
 
   variables {
-    cluster_name              = "integration-test-cluster-${run.timestamp}"
+    cluster_name              = "integration-test-cluster-12345"
     create_cluster            = true
     enable_container_insights = true
     
@@ -114,7 +122,7 @@ run "integration_test_minimal_service" {
   command = plan
 
   variables {
-    cluster_name = "integration-test-minimal-${run.timestamp}"
+    cluster_name = "integration-test-minimal-12345"
     service_name = "minimal-service"
     task_family  = "minimal-task"
     
@@ -188,7 +196,7 @@ run "integration_test_with_efs_volumes" {
   command = plan
 
   variables {
-    cluster_name = "integration-test-efs-${run.timestamp}"
+    cluster_name = "integration-test-efs-12345"
     service_name = "efs-service"
     task_family  = "efs-task"
     
@@ -236,7 +244,7 @@ run "integration_test_with_service_discovery" {
   command = plan
 
   variables {
-    cluster_name = "integration-test-sd-${run.timestamp}"
+    cluster_name = "integration-test-sd-12345"
     service_name = "sd-service"
     task_family  = "sd-task"
     
@@ -275,7 +283,7 @@ run "integration_test_without_blue_green" {
   command = plan
 
   variables {
-    cluster_name                 = "integration-test-no-bg-${run.timestamp}"
+    cluster_name                 = "integration-test-no-bg-12345"
     service_name                 = "no-bg-service"
     task_family                  = "no-bg-task"
     enable_blue_green_deployment = false
@@ -307,7 +315,7 @@ run "integration_test_with_multiple_containers" {
   command = plan
 
   variables {
-    cluster_name = "integration-test-multi-${run.timestamp}"
+    cluster_name = "integration-test-multi-12345"
     service_name = "multi-container-service"
     task_family  = "multi-container-task"
     task_cpu     = "1024"

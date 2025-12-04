@@ -1,3 +1,11 @@
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
+
 # Integration tests for dynamodb-global-table module
 # These tests validate the module with actual AWS provider (or mocked provider)
 
@@ -5,7 +13,7 @@ run "integration_test_complete_global_table" {
   command = plan
 
   variables {
-    table_name   = "integration-test-global-table-${run.timestamp}"
+    table_name   = "integration-test-global-table-12345"
     billing_mode = "PAY_PER_REQUEST"
     hash_key     = "user_id"
     range_key    = "timestamp"
@@ -79,7 +87,7 @@ run "integration_test_minimal_table" {
   command = plan
 
   variables {
-    table_name   = "integration-test-minimal-table-${run.timestamp}"
+    table_name   = "integration-test-minimal-table-12345"
     billing_mode = "PAY_PER_REQUEST"
     hash_key     = "id"
     
@@ -114,7 +122,7 @@ run "integration_test_provisioned_with_gsi" {
   command = plan
 
   variables {
-    table_name     = "integration-test-provisioned-${run.timestamp}"
+    table_name     = "integration-test-provisioned-12345"
     billing_mode   = "PROVISIONED"
     hash_key       = "pk"
     read_capacity  = 10
@@ -170,7 +178,7 @@ run "integration_test_multi_region_with_kms" {
   command = plan
 
   variables {
-    table_name        = "integration-test-multi-region-kms-${run.timestamp}"
+    table_name        = "integration-test-multi-region-kms-12345"
     billing_mode      = "PAY_PER_REQUEST"
     hash_key          = "id"
     encryption_enabled = true

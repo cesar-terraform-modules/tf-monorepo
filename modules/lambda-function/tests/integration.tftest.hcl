@@ -1,3 +1,11 @@
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
+
 # Integration tests for lambda-function module
 # These tests validate the module with actual AWS provider (or mocked provider)
 
@@ -5,7 +13,7 @@ run "integration_test_complete_lambda" {
   command = plan
 
   variables {
-    function_name = "integration-test-complete-${run.timestamp}"
+    function_name = "integration-test-complete-12345"
     handler       = "index.handler"
     runtime       = "python3.11"
     filename      = "/tmp/test-lambda.zip"
@@ -79,7 +87,7 @@ run "integration_test_minimal_lambda" {
   command = plan
 
   variables {
-    function_name = "integration-test-minimal-${run.timestamp}"
+    function_name = "integration-test-minimal-12345"
     handler       = "index.handler"
     runtime       = "nodejs20.x"
     filename      = "/tmp/test-lambda.zip"
@@ -111,7 +119,7 @@ run "integration_test_s3_source" {
   command = plan
 
   variables {
-    function_name     = "integration-test-s3-${run.timestamp}"
+    function_name     = "integration-test-s3-12345"
     handler           = "index.handler"
     runtime           = "python3.11"
     s3_bucket         = "my-lambda-functions"
@@ -140,7 +148,7 @@ run "integration_test_without_log_group" {
   command = plan
 
   variables {
-    function_name    = "integration-test-no-logs-${run.timestamp}"
+    function_name    = "integration-test-no-logs-12345"
     handler          = "index.handler"
     runtime          = "python3.11"
     filename         = "/tmp/test-lambda.zip"
@@ -158,7 +166,7 @@ run "integration_test_without_alias" {
   command = plan
 
   variables {
-    function_name = "integration-test-no-alias-${run.timestamp}"
+    function_name = "integration-test-no-alias-12345"
     handler       = "index.handler"
     runtime       = "python3.11"
     filename      = "/tmp/test-lambda.zip"
@@ -176,7 +184,7 @@ run "integration_test_with_external_role" {
   command = plan
 
   variables {
-    function_name   = "integration-test-external-role-${run.timestamp}"
+    function_name   = "integration-test-external-role-12345"
     handler         = "index.handler"
     runtime         = "python3.11"
     filename        = "/tmp/test-lambda.zip"

@@ -1,3 +1,11 @@
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
+
 # Unit tests for lambda-function module
 # These tests validate the module configuration without creating actual resources
 
