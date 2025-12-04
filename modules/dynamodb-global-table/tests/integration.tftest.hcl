@@ -17,7 +17,7 @@ run "integration_test_complete_global_table" {
     billing_mode = "PAY_PER_REQUEST"
     hash_key     = "user_id"
     range_key    = "timestamp"
-    
+
     attributes = [
       {
         name = "user_id"
@@ -32,7 +32,7 @@ run "integration_test_complete_global_table" {
         type = "S"
       }
     ]
-    
+
     global_secondary_indexes = [
       {
         name            = "status-index"
@@ -41,14 +41,14 @@ run "integration_test_complete_global_table" {
         projection_type = "ALL"
       }
     ]
-    
+
     replica_regions = ["us-west-2", "eu-west-1"]
-    
+
     encryption_enabled             = true
     point_in_time_recovery_enabled = true
     ttl_enabled                    = true
     ttl_attribute_name             = "expires_at"
-    
+
     tags = {
       Environment = "integration-test"
       ManagedBy   = "Terraform"
@@ -90,14 +90,14 @@ run "integration_test_minimal_table" {
     table_name   = "integration-test-minimal-table-12345"
     billing_mode = "PAY_PER_REQUEST"
     hash_key     = "id"
-    
+
     attributes = [
       {
         name = "id"
         type = "S"
       }
     ]
-    
+
     replica_regions = []
   }
 
@@ -127,7 +127,7 @@ run "integration_test_provisioned_with_gsi" {
     hash_key       = "pk"
     read_capacity  = 10
     write_capacity = 10
-    
+
     attributes = [
       {
         name = "pk"
@@ -138,7 +138,7 @@ run "integration_test_provisioned_with_gsi" {
         type = "S"
       }
     ]
-    
+
     global_secondary_indexes = [
       {
         name            = "gsi-1"
@@ -148,7 +148,7 @@ run "integration_test_provisioned_with_gsi" {
         write_capacity  = 5
       }
     ]
-    
+
     replica_regions = []
   }
 
@@ -178,21 +178,21 @@ run "integration_test_multi_region_with_kms" {
   command = plan
 
   variables {
-    table_name        = "integration-test-multi-region-kms-12345"
-    billing_mode      = "PAY_PER_REQUEST"
-    hash_key          = "id"
+    table_name         = "integration-test-multi-region-kms-12345"
+    billing_mode       = "PAY_PER_REQUEST"
+    hash_key           = "id"
     encryption_enabled = true
-    kms_key_arn       = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
-    
+    kms_key_arn        = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
     attributes = [
       {
         name = "id"
         type = "S"
       }
     ]
-    
+
     replica_regions = ["us-west-2", "eu-west-1"]
-    
+
     replica_kms_key_arns = {
       "us-west-2" = "arn:aws:kms:us-west-2:123456789012:key/12345678-1234-1234-1234-123456789012"
       "eu-west-1" = "arn:aws:kms:eu-west-1:123456789012:key/12345678-1234-1234-1234-123456789012"

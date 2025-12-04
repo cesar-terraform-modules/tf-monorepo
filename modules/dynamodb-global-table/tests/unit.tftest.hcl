@@ -214,9 +214,9 @@ run "test_encryption_enabled" {
   command = plan
 
   variables {
-    table_name        = "test-encrypted-table"
-    billing_mode      = "PAY_PER_REQUEST"
-    hash_key          = "id"
+    table_name         = "test-encrypted-table"
+    billing_mode       = "PAY_PER_REQUEST"
+    hash_key           = "id"
     encryption_enabled = true
     attributes = [
       {
@@ -238,11 +238,11 @@ run "test_encryption_with_kms" {
   command = plan
 
   variables {
-    table_name        = "test-kms-encrypted-table"
-    billing_mode      = "PAY_PER_REQUEST"
-    hash_key          = "id"
+    table_name         = "test-kms-encrypted-table"
+    billing_mode       = "PAY_PER_REQUEST"
+    hash_key           = "id"
     encryption_enabled = true
-    kms_key_arn       = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+    kms_key_arn        = "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
     attributes = [
       {
         name = "id"
@@ -292,10 +292,10 @@ run "test_ttl_configuration" {
   command = plan
 
   variables {
-    table_name       = "test-ttl-table"
-    billing_mode     = "PAY_PER_REQUEST"
-    hash_key         = "id"
-    ttl_enabled      = true
+    table_name         = "test-ttl-table"
+    billing_mode       = "PAY_PER_REQUEST"
+    hash_key           = "id"
+    ttl_enabled        = true
     ttl_attribute_name = "expires_at"
     attributes = [
       {

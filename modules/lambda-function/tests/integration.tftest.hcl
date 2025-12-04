@@ -18,37 +18,37 @@ run "integration_test_complete_lambda" {
     runtime       = "python3.11"
     filename      = "/tmp/test-lambda.zip"
     description   = "Integration test Lambda function"
-    
+
     timeout     = 60
     memory_size = 512
     publish     = true
-    
+
     environment_variables = {
       ENVIRONMENT = "integration-test"
       LOG_LEVEL   = "INFO"
     }
-    
+
     vpc_config = {
       subnet_ids         = ["subnet-12345", "subnet-67890"]
       security_group_ids = ["sg-12345"]
     }
-    
+
     dead_letter_target_arn         = "arn:aws:sqs:us-east-1:123456789012:test-dlq"
     tracing_mode                   = "Active"
     reserved_concurrent_executions = 5
-    
+
     create_role = true
     additional_policy_arns = [
       "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
     ]
-    
-    create_alias          = true
-    alias_name            = "live"
-    alias_description     = "Live version"
-    
-    create_log_group      = true
-    log_retention_days    = 30
-    
+
+    create_alias      = true
+    alias_name        = "live"
+    alias_description = "Live version"
+
+    create_log_group   = true
+    log_retention_days = 30
+
     tags = {
       Environment = "integration-test"
       ManagedBy   = "Terraform"

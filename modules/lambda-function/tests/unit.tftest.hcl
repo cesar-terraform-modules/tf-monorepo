@@ -121,11 +121,11 @@ run "test_external_iam_role" {
   command = plan
 
   variables {
-    function_name  = "test-function-external-role"
-    handler        = "index.handler"
-    runtime        = "nodejs20.x"
-    filename       = "/tmp/test-lambda.zip"
-    create_role    = false
+    function_name   = "test-function-external-role"
+    handler         = "index.handler"
+    runtime         = "nodejs20.x"
+    filename        = "/tmp/test-lambda.zip"
+    create_role     = false
     lambda_role_arn = "arn:aws:iam::123456789012:role/external-lambda-role"
   }
 
@@ -188,8 +188,8 @@ run "test_environment_variables" {
     runtime       = "python3.11"
     filename      = "/tmp/test-lambda.zip"
     environment_variables = {
-      ENV         = "production"
-      DEBUG       = "false"
+      ENV          = "production"
+      DEBUG        = "false"
       API_ENDPOINT = "https://api.example.com"
     }
   }
@@ -256,12 +256,12 @@ run "test_alias_creation" {
   command = plan
 
   variables {
-    function_name   = "test-alias-function"
-    handler         = "index.handler"
-    runtime         = "python3.11"
-    filename        = "/tmp/test-lambda.zip"
-    create_alias    = true
-    alias_name      = "production"
+    function_name     = "test-alias-function"
+    handler           = "index.handler"
+    runtime           = "python3.11"
+    filename          = "/tmp/test-lambda.zip"
+    create_alias      = true
+    alias_name        = "production"
     alias_description = "Production alias"
   }
 
@@ -286,11 +286,11 @@ run "test_cloudwatch_log_group" {
   command = plan
 
   variables {
-    function_name     = "test-log-function"
-    handler           = "index.handler"
-    runtime           = "python3.11"
-    filename          = "/tmp/test-lambda.zip"
-    create_log_group  = true
+    function_name      = "test-log-function"
+    handler            = "index.handler"
+    runtime            = "python3.11"
+    filename           = "/tmp/test-lambda.zip"
+    create_log_group   = true
     log_retention_days = 14
   }
 
@@ -365,10 +365,10 @@ run "test_reserved_concurrent_executions" {
   command = plan
 
   variables {
-    function_name                 = "test-concurrency-function"
-    handler                       = "index.handler"
-    runtime                       = "python3.11"
-    filename                      = "/tmp/test-lambda.zip"
+    function_name                  = "test-concurrency-function"
+    handler                        = "index.handler"
+    runtime                        = "python3.11"
+    filename                       = "/tmp/test-lambda.zip"
     reserved_concurrent_executions = 10
   }
 

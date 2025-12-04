@@ -16,7 +16,7 @@ run "test_basic_ecs_service" {
     cluster_name = "test-cluster"
     service_name = "test-service"
     task_family  = "test-task"
-    
+
     container_definitions = [
       {
         name      = "app"
@@ -30,7 +30,7 @@ run "test_basic_ecs_service" {
         ]
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345", "subnet-67890"]
     security_group_ids = ["sg-12345"]
   }
@@ -94,7 +94,7 @@ run "test_custom_task_resources" {
     task_family  = "test-task"
     task_cpu     = "1024"
     task_memory  = "2048"
-    
+
     container_definitions = [
       {
         name      = "app"
@@ -102,7 +102,7 @@ run "test_custom_task_resources" {
         essential = true
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -127,14 +127,14 @@ run "test_existing_cluster" {
     create_cluster = false
     service_name   = "test-service"
     task_family    = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -154,14 +154,14 @@ run "test_container_insights" {
     enable_container_insights = true
     service_name              = "test-service"
     task_family               = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -182,18 +182,18 @@ run "test_execution_role_creation" {
   command = plan
 
   variables {
-    cluster_name           = "test-cluster"
-    service_name           = "test-service"
-    task_family            = "test-task"
-    create_execution_role  = true
-    
+    cluster_name          = "test-cluster"
+    service_name          = "test-service"
+    task_family           = "test-task"
+    create_execution_role = true
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -213,14 +213,14 @@ run "test_task_role_creation" {
     service_name     = "test-service"
     task_family      = "test-task"
     create_task_role = true
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -243,14 +243,14 @@ run "test_external_roles" {
     execution_role_arn    = "arn:aws:iam::123456789012:role/execution-role"
     create_task_role      = false
     task_role_arn         = "arn:aws:iam::123456789012:role/task-role"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -282,18 +282,18 @@ run "test_service_scaling" {
   command = plan
 
   variables {
-    cluster_name   = "test-cluster"
-    service_name   = "test-service"
-    task_family    = "test-task"
-    desired_count  = 3
-    
+    cluster_name  = "test-cluster"
+    service_name  = "test-service"
+    task_family   = "test-task"
+    desired_count = 3
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -312,7 +312,7 @@ run "test_load_balancer_configuration" {
     cluster_name = "test-cluster"
     service_name = "test-service"
     task_family  = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
@@ -324,7 +324,7 @@ run "test_load_balancer_configuration" {
         ]
       }
     ]
-    
+
     load_balancers = [
       {
         target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/test/abc123"
@@ -332,7 +332,7 @@ run "test_load_balancer_configuration" {
         container_port   = 8080
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -361,14 +361,14 @@ run "test_service_discovery" {
     cluster_name = "test-cluster"
     service_name = "test-service"
     task_family  = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     service_registries = [
       {
         registry_arn   = "arn:aws:servicediscovery:us-east-1:123456789012:service/srv-abc123"
@@ -376,7 +376,7 @@ run "test_service_discovery" {
         container_port = 8080
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -392,18 +392,18 @@ run "test_ecs_exec" {
   command = plan
 
   variables {
-    cluster_name          = "test-cluster"
-    service_name          = "test-service"
-    task_family           = "test-task"
+    cluster_name           = "test-cluster"
+    service_name           = "test-service"
+    task_family            = "test-task"
     enable_execute_command = true
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -424,14 +424,14 @@ run "test_blue_green_deployment_enabled" {
     task_family                  = "test-task"
     enable_blue_green_deployment = true
     codedeploy_listener_arns     = ["arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-lb/abc123/def456"]
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     load_balancers = [
       {
         target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/test/abc123"
@@ -439,7 +439,7 @@ run "test_blue_green_deployment_enabled" {
         container_port   = 80
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -464,14 +464,14 @@ run "test_blue_green_deployment_disabled" {
     service_name                 = "test-service"
     task_family                  = "test-task"
     enable_blue_green_deployment = false
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -490,17 +490,17 @@ run "test_tags_are_applied" {
     cluster_name = "test-cluster"
     service_name = "test-service"
     task_family  = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
-    
+
     tags = {
       Environment = "test"
       Project     = "testing"
