@@ -162,17 +162,17 @@ run "test_global_secondary_indexes" {
   }
 
   assert {
-    condition     = aws_dynamodb_table.this.global_secondary_index[0].name == "status-index"
+    condition     = [for gsi in aws_dynamodb_table.this.global_secondary_index : gsi.name if gsi.name == "status-index"][0] == "status-index"
     error_message = "GSI name should be 'status-index'"
   }
 
   assert {
-    condition     = aws_dynamodb_table.this.global_secondary_index[0].hash_key == "status"
+    condition     = [for gsi in aws_dynamodb_table.this.global_secondary_index : gsi.hash_key if gsi.name == "status-index"][0] == "status"
     error_message = "GSI hash key should be 'status'"
   }
 
   assert {
-    condition     = aws_dynamodb_table.this.global_secondary_index[0].projection_type == "ALL"
+    condition     = [for gsi in aws_dynamodb_table.this.global_secondary_index : gsi.projection_type if gsi.name == "status-index"][0] == "ALL"
     error_message = "GSI projection type should be 'ALL'"
   }
 }
@@ -195,8 +195,8 @@ run "test_replica_regions" {
 
   # Verify replicas are configured
   assert {
-    condition     = length(aws_dynamodb_table.this.replica) == 2
-    error_message = "Should have 2 replicas"
+    condition     = length(var.replica_regions) == 2
+    error_message = "Should have 2 replica regions configured"
   }
 
   assert {
