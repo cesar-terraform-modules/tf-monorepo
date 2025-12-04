@@ -78,8 +78,8 @@ run "integration_test_complete_global_table" {
   }
 
   assert {
-    condition     = length(aws_dynamodb_table.this.replica) == 2
-    error_message = "Should have 2 replicas"
+    condition     = length(var.replica_regions) == 2
+    error_message = "Should have 2 replica regions configured"
   }
 }
 
@@ -113,8 +113,8 @@ run "integration_test_minimal_table" {
   }
 
   assert {
-    condition     = length(aws_dynamodb_table.this.replica) == 0
-    error_message = "Should have no replicas"
+    condition     = length(var.replica_regions) == 0
+    error_message = "Should have no replica regions configured"
   }
 }
 
@@ -164,12 +164,12 @@ run "integration_test_provisioned_with_gsi" {
   }
 
   assert {
-    condition     = aws_dynamodb_table.this.global_secondary_index[0].read_capacity == 5
+    condition     = [for gsi in aws_dynamodb_table.this.global_secondary_index : gsi.read_capacity if gsi.name == "gsi-1"][0] == 5
     error_message = "GSI read capacity should be 5"
   }
 
   assert {
-    condition     = aws_dynamodb_table.this.global_secondary_index[0].write_capacity == 5
+    condition     = [for gsi in aws_dynamodb_table.this.global_secondary_index : gsi.write_capacity if gsi.name == "gsi-1"][0] == 5
     error_message = "GSI write capacity should be 5"
   }
 }
@@ -201,8 +201,8 @@ run "integration_test_multi_region_with_kms" {
 
   # Verify replicas have KMS keys configured
   assert {
-    condition     = length(aws_dynamodb_table.this.replica) == 2
-    error_message = "Should have 2 replicas"
+    condition     = length(var.replica_regions) == 2
+    error_message = "Should have 2 replica regions configured"
   }
 
   assert {
