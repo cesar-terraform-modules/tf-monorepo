@@ -17,15 +17,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: 1.6.0
+          tofu_version: 1.6.0
 
       - name: Check Terraform formatting
         run: |
           echo "Checking Terraform formatting across all modules..."
-          terraform fmt -check -recursive -diff
+          tofu fmt -check -recursive -diff
           echo "✅ All Terraform files are properly formatted"
 
   terraform-tests:
@@ -45,20 +45,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: 1.6.0
+          tofu_version: 1.6.0
 
       - name: Initialize Terraform module
         run: |
           cd modules/${{ matrix.module }}
-          terraform init
+          tofu init
 
       - name: Run Terraform tests
         run: |
           cd modules/${{ matrix.module }}
-          terraform test
+          tofu test
           echo "✅ All tests passed for ${{ matrix.module }}"
 
   trivy-security-scan:
