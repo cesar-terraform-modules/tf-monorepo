@@ -1,14 +1,6 @@
 # Unit tests for s3-private-bucket module
 # These tests validate the module configuration without creating actual resources
 
-mock_provider "aws" {
-  mock_data "aws_region" {
-    defaults = {
-      name = "us-east-1"
-    }
-  }
-}
-
 run "test_basic_bucket_configuration" {
   command = plan
 

@@ -1,11 +1,3 @@
-mock_provider "aws" {
-  mock_data "aws_region" {
-    defaults = {
-      name = "us-east-1"
-    }
-  }
-}
-
 # Unit tests for dynamodb-global-table module
 # These tests validate the module configuration without creating actual resources
 
