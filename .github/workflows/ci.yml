@@ -53,7 +53,16 @@ jobs:
       - name: Initialize Terraform module
         run: |
           cd modules/${{ matrix.module }}
+          # Temporarily rename tests directory to exclude it from tofu init
+          # OpenTofu tries to parse .tftest.hcl files during init, which causes errors
+          if [ -d "tests" ]; then
+            mv tests tests.tmp
+          fi
           tofu init
+          # Restore tests directory after init
+          if [ -d "tests.tmp" ]; then
+            mv tests.tmp tests
+          fi
 
       - name: Run Terraform tests
         run: |
