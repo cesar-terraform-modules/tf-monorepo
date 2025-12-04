@@ -157,3 +157,18 @@ module "lambda_with_alias" {
 | role_name | The name of the IAM role created for the Lambda function |
 | alias_arn | The ARN of the Lambda alias |
 | log_group_name | The name of the CloudWatch log group |
+
+## Testing
+
+This module includes comprehensive test coverage:
+
+- **Unit tests**: Validate function configuration, IAM role creation, VPC settings, environment variables, DLQ, X-Ray tracing, aliases, logging, and tag application
+- **Integration tests**: Test complete Lambda deployments with S3 sources, external roles, and various feature combinations
+
+Run tests:
+```bash
+cd modules/lambda-function
+terraform test
+```
+
+See [TESTING.md](../../TESTING.md) for detailed testing instructions.
