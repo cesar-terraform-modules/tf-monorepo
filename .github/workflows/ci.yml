@@ -17,15 +17,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v1
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          tofu_version: 1.6.0
+          terraform_version: 1.7.0
 
       - name: Check Terraform formatting
         run: |
           echo "Checking Terraform formatting across all modules..."
-          tofu fmt -check -recursive -diff
+          terraform fmt -check -recursive -diff
           echo "✅ All Terraform files are properly formatted"
 
   terraform-tests:
@@ -45,20 +45,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v1
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          tofu_version: 1.6.0
+          terraform_version: 1.7.0
 
       - name: Initialize Terraform module
         run: |
           cd modules/${{ matrix.module }}
-          tofu init
+          terraform init
 
       - name: Run Terraform tests
         run: |
           cd modules/${{ matrix.module }}
-          tofu test
+          terraform test
           echo "✅ All tests passed for ${{ matrix.module }}"
 
   trivy-security-scan:
@@ -100,25 +100,25 @@ jobs:
         run: |
           echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.terraform-fmt.result }}" == "success" ]; then
             echo "✅ Terraform Format Check: Passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Terraform Format Check: Failed" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           if [ "${{ needs.terraform-tests.result }}" == "success" ]; then
             echo "✅ Terraform Module Tests: Passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Terraform Module Tests: Failed" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           if [ "${{ needs.trivy-security-scan.result }}" == "success" ]; then
             echo "✅ Security Scan (Trivy): Passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Security Scan (Trivy): Failed" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           # Fail this job if any of the required jobs failed
           if [ "${{ needs.terraform-fmt.result }}" != "success" ] || \
              [ "${{ needs.terraform-tests.result }}" != "success" ] || \
