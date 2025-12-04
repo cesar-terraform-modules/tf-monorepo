@@ -41,29 +41,35 @@ To run all tests for all modules, use the following command from the repository 
 # Using Terraform
 for module in modules/*/; do
   echo "Testing ${module}..."
+  terraform -chdir="${module}" init
   terraform -chdir="${module}" test
 done
 
 # Using OpenTofu
 for module in modules/*/; do
   echo "Testing ${module}..."
+  tofu -chdir="${module}" init
   tofu -chdir="${module}" test
 done
 ```
 
 ### Test a Specific Module
 
-Navigate to the module directory and run the test command:
+Navigate to the module directory, initialize, and run the test command:
 
 ```bash
 # Using Terraform
 cd modules/s3-private-bucket
+terraform init
 terraform test
 
 # Using OpenTofu
 cd modules/s3-private-bucket
+tofu init
 tofu test
 ```
+
+**Note:** You must run `terraform init` (or `tofu init`) before running tests for the first time or after updating dependencies.
 
 ### Run Specific Test Files
 
