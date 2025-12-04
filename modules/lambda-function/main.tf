@@ -8,7 +8,7 @@ resource "aws_lambda_function" "this" {
   memory_size   = var.memory_size
 
   filename         = var.filename
-  source_code_hash = var.filename != null ? filebase64sha256(var.filename) : null
+  source_code_hash = var.filename != null ? try(filebase64sha256(var.filename), null) : null
 
   s3_bucket         = var.s3_bucket
   s3_key            = var.s3_key
@@ -53,22 +53,20 @@ resource "aws_iam_role" "lambda" {
   count = var.create_role ? 1 : 0
 
   name               = "${var.function_name}-role"
-  assume_role_policy = data.aws_iam_policy_document.lambda_assume_role[0].json
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 
   tags = var.tags
-}
-
-data "aws_iam_policy_document" "lambda_assume_role" {
-  count = var.create_role ? 1 : 0
-
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-  }
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
