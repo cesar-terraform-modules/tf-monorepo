@@ -123,6 +123,7 @@ variable "tags" {
 
 ### Example Resource Definition
 ```hcl
+# AWS Example
 resource "aws_s3_bucket" "example" {
   bucket = "${var.project_name}-${var.environment}-bucket"
 
@@ -132,6 +133,37 @@ resource "aws_s3_bucket" "example" {
       Name        = "${var.project_name}-${var.environment}-bucket"
       Environment = var.environment
       ManagedBy   = "Terraform"
+    }
+  )
+}
+
+# Azure Example
+resource "azurerm_storage_account" "example" {
+  name                     = "${var.project_name}${var.environment}storage"
+  resource_group_name      = var.resource_group_name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = merge(
+    var.tags,
+    {
+      Environment = var.environment
+      ManagedBy   = "Terraform"
+    }
+  )
+}
+
+# GCP Example
+resource "google_storage_bucket" "example" {
+  name     = "${var.project_name}-${var.environment}-bucket"
+  location = var.region
+
+  labels = merge(
+    var.tags,
+    {
+      environment = var.environment
+      managed_by  = "terraform"
     }
   )
 }
@@ -163,10 +195,10 @@ resource "aws_s3_bucket" "example" {
 - Skip validation before committing
 
 ### Security Considerations:
-- Never commit AWS access keys, passwords, or tokens
+- Never commit cloud provider access keys, passwords, or tokens
 - Use Terraform Cloud or backend encryption for state files
 - Use variables for sensitive values
-- Follow principle of least privilege for IAM policies
+- Follow principle of least privilege for access control policies
 - Use secure defaults for resources
 - Validate input data to prevent injection attacks
 
