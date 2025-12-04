@@ -24,13 +24,7 @@ jobs:
         run: |
           echo "Checking Terraform formatting across all modules..."
           terraform fmt -check -recursive -diff
-          if [ $? -eq 0 ]; then
-            echo "✅ All Terraform files are properly formatted"
-          else
-            echo "❌ Some Terraform files are not properly formatted"
-            echo "Run 'terraform fmt -recursive' to fix formatting issues"
-            exit 1
-          fi
+          echo "✅ All Terraform files are properly formatted"
 
   terraform-tests:
     name: Terraform Module Tests
