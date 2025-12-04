@@ -1,5 +1,13 @@
 # Integration tests for s3-private-bucket module
-# These tests validate the module with actual AWS provider
+# These tests validate the module with actual AWS provider (or mocked provider)
+
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
 
 run "integration_test_complete_bucket" {
   command = plan

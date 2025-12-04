@@ -1,5 +1,13 @@
+mock_provider "aws" {
+  mock_data "aws_region" {
+    defaults = {
+      name = "us-east-1"
+    }
+  }
+}
+
 # Integration tests for fargate-ecs-bluegreen module
-# These tests validate the module with actual AWS provider
+# These tests validate the module with actual AWS provider (or mocked provider)
 
 run "integration_test_complete_fargate_service" {
   command = plan
