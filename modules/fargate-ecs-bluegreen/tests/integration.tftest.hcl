@@ -83,7 +83,7 @@ run "integration_test_complete_fargate_service" {
 
   # Verify all resources are created
   assert {
-    condition     = length([for c in [aws_ecs_cluster.this] : c if c != null]) > 0
+    condition     = length(aws_ecs_cluster.this) > 0
     error_message = "ECS cluster should be created"
   }
 
@@ -98,22 +98,22 @@ run "integration_test_complete_fargate_service" {
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.execution] : r if r != null]) > 0
+    condition     = length(aws_iam_role.execution) > 0
     error_message = "Execution role should be created"
   }
 
   assert {
-    condition     = length([for r in [aws_iam_role.task] : r if r != null]) > 0
+    condition     = length(aws_iam_role.task) > 0
     error_message = "Task role should be created"
   }
 
   assert {
-    condition     = length([for app in [aws_codedeploy_app.this] : app if app != null]) > 0
+    condition     = length(aws_codedeploy_app.this) > 0
     error_message = "CodeDeploy application should be created"
   }
 
   assert {
-    condition     = length([for dg in [aws_codedeploy_deployment_group.this] : dg if dg != null]) > 0
+    condition     = length(aws_codedeploy_deployment_group.this) > 0
     error_message = "CodeDeploy deployment group should be created"
   }
 }
@@ -182,7 +182,7 @@ run "integration_test_with_external_cluster" {
 
   # Verify cluster is not created
   assert {
-    condition     = length([for c in [aws_ecs_cluster.this] : c if c != null]) == 0
+    condition     = length(aws_ecs_cluster.this) == 0
     error_message = "ECS cluster should not be created when using existing cluster"
   }
 
@@ -235,7 +235,7 @@ run "integration_test_with_efs_volumes" {
   }
 
   assert {
-    condition     = aws_ecs_task_definition.this.volume[0].name == "efs-storage"
+    condition     = [for v in aws_ecs_task_definition.this.volume : v.name if v.name == "efs-storage"][0] == "efs-storage"
     error_message = "Volume name should match"
   }
 }
@@ -301,12 +301,12 @@ run "integration_test_without_blue_green" {
 
   # Verify CodeDeploy resources are not created
   assert {
-    condition     = length([for app in [aws_codedeploy_app.this] : app if app != null]) == 0
+    condition     = length(aws_codedeploy_app.this) == 0
     error_message = "CodeDeploy application should not be created"
   }
 
   assert {
-    condition     = length([for dg in [aws_codedeploy_deployment_group.this] : dg if dg != null]) == 0
+    condition     = length(aws_codedeploy_deployment_group.this) == 0
     error_message = "CodeDeploy deployment group should not be created"
   }
 }
