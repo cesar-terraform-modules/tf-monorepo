@@ -1,6 +1,28 @@
 # Terraform Modules Monorepo
 
+[![CI Pipeline](https://github.com/cesar-terraform-modules/tf-monorepo/actions/workflows/ci.yml/badge.svg)](https://github.com/cesar-terraform-modules/tf-monorepo/actions/workflows/ci.yml)
+
 A curated collection of production-ready Terraform modules for AWS infrastructure.
+
+## CI/CD Pipeline
+
+This repository includes a comprehensive CI/CD pipeline that automatically validates:
+
+- **📋 Terraform Formatting**: Ensures all Terraform code follows proper formatting standards
+- **✅ Module Tests**: Runs comprehensive test suites for all modules using Terraform's native testing framework
+- **🔒 Security Scanning**: Performs security analysis using Trivy to prevent introduction of vulnerabilities
+
+The CI pipeline runs automatically on:
+- All pull requests to `main` branch
+- All pushes to `main` branch
+- Manual workflow dispatch
+
+### Pipeline Status
+
+All checks must pass before code can be merged to ensure:
+- Code quality and consistency
+- Module functionality and reliability
+- Security best practices and compliance
 
 ## Available Modules
 
@@ -219,7 +241,7 @@ For detailed testing instructions, test coverage, and writing new tests, see [TE
 
 ## Contributing
 
-When adding new modules:
+When adding new modules or making changes:
 1. Follow the existing module structure
 2. Include comprehensive documentation in README.md
 3. Use descriptive variable names and include descriptions
@@ -227,6 +249,15 @@ When adding new modules:
 5. Include usage examples
 6. **Write comprehensive unit and integration tests**
 7. Ensure all tests pass before submitting
+8. **Run `terraform fmt -recursive`** to format your code
+9. **Review security scan results** - Address any critical or high severity issues
+
+The CI pipeline will automatically verify:
+- ✅ Terraform formatting is correct
+- ✅ All module tests pass
+- ✅ No security vulnerabilities are introduced
+
+All CI checks must pass before your pull request can be merged.
 
 ## License
 
