@@ -16,16 +16,16 @@ run "integration_test_complete_fargate_service" {
     cluster_name              = "integration-test-cluster-12345"
     create_cluster            = true
     enable_container_insights = true
-    
+
     service_name = "integration-test-service"
     task_family  = "integration-test-task"
     task_cpu     = "512"
     task_memory  = "1024"
-    
+
     desired_count                      = 2
     deployment_maximum_percent         = 200
     deployment_minimum_healthy_percent = 100
-    
+
     container_definitions = [
       {
         name      = "nginx"
@@ -45,11 +45,11 @@ run "integration_test_complete_fargate_service" {
         ]
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345", "subnet-67890"]
     security_group_ids = ["sg-12345"]
     assign_public_ip   = true
-    
+
     load_balancers = [
       {
         target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/test/abc123"
@@ -57,23 +57,23 @@ run "integration_test_complete_fargate_service" {
         container_port   = 80
       }
     ]
-    
+
     health_check_grace_period_seconds = 60
-    
+
     create_execution_role = true
     create_task_role      = true
-    
+
     task_role_additional_policies = [
       "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
     ]
-    
+
     enable_execute_command = true
-    
-    enable_blue_green_deployment    = true
-    codedeploy_deployment_config    = "CodeDeployDefault.ECSLinear10PercentEvery1Minutes"
+
+    enable_blue_green_deployment     = true
+    codedeploy_deployment_config     = "CodeDeployDefault.ECSLinear10PercentEvery1Minutes"
     codedeploy_auto_rollback_enabled = true
-    codedeploy_listener_arns        = ["arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-lb/abc123/def456"]
-    
+    codedeploy_listener_arns         = ["arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-lb/abc123/def456"]
+
     tags = {
       Environment = "integration-test"
       ManagedBy   = "Terraform"
@@ -125,7 +125,7 @@ run "integration_test_minimal_service" {
     cluster_name = "integration-test-minimal-12345"
     service_name = "minimal-service"
     task_family  = "minimal-task"
-    
+
     container_definitions = [
       {
         name      = "app"
@@ -133,7 +133,7 @@ run "integration_test_minimal_service" {
         essential = true
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -168,14 +168,14 @@ run "integration_test_with_external_cluster" {
     create_cluster = false
     service_name   = "service-on-existing-cluster"
     task_family    = "test-task"
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -199,7 +199,7 @@ run "integration_test_with_efs_volumes" {
     cluster_name = "integration-test-efs-12345"
     service_name = "efs-service"
     task_family  = "efs-task"
-    
+
     container_definitions = [
       {
         name  = "app"
@@ -212,18 +212,18 @@ run "integration_test_with_efs_volumes" {
         ]
       }
     ]
-    
+
     volumes = [
       {
         name = "efs-storage"
         efs_volume_configuration = {
-          file_system_id = "fs-12345678"
-          root_directory = "/"
+          file_system_id     = "fs-12345678"
+          root_directory     = "/"
           transit_encryption = "ENABLED"
         }
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -247,7 +247,7 @@ run "integration_test_with_service_discovery" {
     cluster_name = "integration-test-sd-12345"
     service_name = "sd-service"
     task_family  = "sd-task"
-    
+
     container_definitions = [
       {
         name  = "app"
@@ -259,7 +259,7 @@ run "integration_test_with_service_discovery" {
         ]
       }
     ]
-    
+
     service_registries = [
       {
         registry_arn   = "arn:aws:servicediscovery:us-east-1:123456789012:service/srv-abc123"
@@ -267,7 +267,7 @@ run "integration_test_with_service_discovery" {
         container_port = 8080
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -287,14 +287,14 @@ run "integration_test_without_blue_green" {
     service_name                 = "no-bg-service"
     task_family                  = "no-bg-task"
     enable_blue_green_deployment = false
-    
+
     container_definitions = [
       {
         name  = "app"
         image = "app:latest"
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
@@ -320,7 +320,7 @@ run "integration_test_with_multiple_containers" {
     task_family  = "multi-container-task"
     task_cpu     = "1024"
     task_memory  = "2048"
-    
+
     container_definitions = [
       {
         name      = "app"
@@ -343,7 +343,7 @@ run "integration_test_with_multiple_containers" {
         ]
       }
     ]
-    
+
     subnet_ids         = ["subnet-12345"]
     security_group_ids = ["sg-12345"]
   }
