@@ -1,0 +1,101 @@
+name: Upload Custom Modules to StackGen
+
+on:
+  release:
+    types: [created, published]
+
+jobs:
+  upload-modules:
+    name: Upload Modules to StackGen
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install StackGen CLI
+        run: |
+          # Check if StackGen CLI is already installed
+          if ! command -v stackgen &> /dev/null; then
+            echo "Installing StackGen CLI via Homebrew..."
+
+            # Install Homebrew if not already installed
+            if ! command -v brew &> /dev/null; then
+              echo "Installing Homebrew..."
+              # Install Homebrew (non-interactive mode)
+              NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+              # Configure Homebrew for the shell
+              # Try common Homebrew installation paths
+              if [ -d "/home/linuxbrew/.linuxbrew" ]; then
+                eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+                echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> $GITHUB_ENV
+              elif [ -d "$HOME/.linuxbrew" ]; then
+                eval "$($HOME/.linuxbrew/bin/brew shellenv)"
+                echo "eval \"$($HOME/.linuxbrew/bin/brew shellenv)\"" >> $GITHUB_ENV
+              else
+                # Fallback: try to find brew in PATH after installation
+                export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:$HOME/.linuxbrew/bin"
+                echo 'export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:$HOME/.linuxbrew/bin"' >> $GITHUB_ENV
+              fi
+            else
+              echo "Homebrew is already installed"
+            fi
+
+            # Ensure brew is in PATH
+            export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:$HOME/.linuxbrew/bin"
+
+            # Install StackGen CLI via Homebrew
+            echo "Installing StackGen CLI..."
+            brew install stackgenhq/stackgen/stackgen
+
+            # Verify installation
+            stackgen --version
+          else
+            echo "StackGen CLI is already installed"
+            stackgen --version
+          fi
+
+      - name: Upload custom modules to StackGen
+        run: |
+          # Ensure StackGen CLI is in PATH
+          export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin:$HOME/.linuxbrew/bin"
+
+          echo "Uploading custom modules to StackGen..."
+          echo "Repository: ${{ github.repository }}"
+          echo "Tag: ${{ github.event.release.tag_name }}"
+          echo "Repository URL: https://github.com/${{ github.repository }}"
+
+          # Upload modules using Git repository URL approach (recommended for monorepos)
+          stackgen upload custom-modules \
+            --log 2 \
+            --provider aws \
+            --iac-type Terraform \
+            --tag "${{ github.event.release.tag_name }}" \
+            --repo-url "https://github.com/${{ github.repository }}"
+        env:
+          STACKGEN_API_KEY: ${{ secrets.STACKGEN_API_KEY }}
+          STACKGEN_PROJECT: e3378e89-d029-4e41-8f57-4a6796bbe3f2
+          # SCM token may be required for private repositories
+          #SCM_TOKEN: ${{ secrets.SCM_TOKEN }}
+
+      - name: Upload summary
+        if: always()
+        run: |
+          echo "## StackGen Module Upload Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: \`${{ github.repository }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release Tag**: \`${{ github.event.release.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Provider**: AWS" >> $GITHUB_STEP_SUMMARY
+          echo "- **IAC Type**: Terraform" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Modules successfully uploaded to StackGen" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Failed to upload modules to StackGen" >> $GITHUB_STEP_SUMMARY
+          fi
+
