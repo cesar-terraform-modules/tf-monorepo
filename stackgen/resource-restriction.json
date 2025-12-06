@@ -1,0 +1,13 @@
+{
+        "name": "Limit to tf-monorepo try 3",
+        "description": "Limit to approved modules in the tf-monorepo repository",
+        "resources": ["aws_s3"],
+        "customModuleFilters": [
+                {
+                        "provider": "aws",
+                        "resourceType": "dynamodb",
+                        "baseId": "fb60f7a6-dd11-454d-b5f3-bc5ee2429c6d",
+                        "templateId": "fb60f7a6-dd11-454d-b5f3-bc5ee2429c6d"
+                }
+        ]
+}
