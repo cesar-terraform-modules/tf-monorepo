@@ -41,6 +41,7 @@ jobs:
           - lambda-function
           - fargate-ecs-bluegreen
           - ses-email
+          - sns-topic
       fail-fast: false
     steps:
       - name: Checkout code
