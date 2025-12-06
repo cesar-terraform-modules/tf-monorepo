@@ -71,7 +71,7 @@ module "sns_topic_fifo" {
 | kms_master_key_id | KMS key ID to use for server-side encryption of the topic | `string` | `null` | no |
 | topic_policy | Optional JSON policy for the SNS topic | `string` | `null` | no |
 | delivery_policy | Optional JSON delivery policy for the SNS topic | `string` | `null` | no |
-| subscriptions | List of subscription definitions to attach to the topic. Each object should include `protocol` (http/https/sqs) and `endpoint`, with optional `raw_message_delivery`, `filter_policy`, and `delivery_policy`. | `list(object({ protocol = string, endpoint = string, raw_message_delivery = optional(bool), filter_policy = optional(any), delivery_policy = optional(string) }))` | `[]` | no |
+| subscriptions | List of subscription definitions to attach to the topic. Each object should include `protocol` (http/https/sqs) and `endpoint`, with optional `raw_message_delivery`, `filter_policy`, and `delivery_policy`. | `any (expects list of objects)` | `[]` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
 
 ## Outputs

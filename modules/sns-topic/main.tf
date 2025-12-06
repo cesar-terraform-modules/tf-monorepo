@@ -4,6 +4,7 @@ locals {
       protocol             = try(s.protocol, "")
       endpoint             = try(s.endpoint, "")
       raw_message_delivery = try(s.raw_message_delivery, null)
+      filter_policy_raw    = try(s.filter_policy, null)
       filter_policy        = try(s.filter_policy, null)
       delivery_policy      = try(s.delivery_policy, null)
     }
@@ -15,7 +16,7 @@ locals {
       protocol             = lower(sub.protocol)
       endpoint             = sub.endpoint
       raw_message_delivery = sub.raw_message_delivery
-      filter_policy        = sub.filter_policy
+      filter_policy        = sub.filter_policy == null ? null : (length(try(sub.filter_policy, {})) == 0 ? null : sub.filter_policy)
       delivery_policy      = sub.delivery_policy
     }
   }

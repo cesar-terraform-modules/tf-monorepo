@@ -46,14 +46,8 @@ variable "delivery_policy" {
 
 variable "subscriptions" {
   description = "List of subscription definitions to attach to the topic"
-  type = list(object({
-    protocol             = string
-    endpoint             = string
-    raw_message_delivery = optional(bool, false)
-    filter_policy        = optional(any, {})
-    delivery_policy      = optional(string, null)
-  }))
-  default = []
+  type        = any
+  default     = []
 
   validation {
     condition = alltrue([

@@ -72,8 +72,11 @@ run "test_creates_subscriptions" {
     topic_name = "retroboard-alerts"
     subscriptions = [
       {
-        protocol = "https"
-        endpoint = "https://alerts.example.com/slack"
+        protocol             = "https"
+        endpoint             = "https://alerts.example.com/slack"
+        raw_message_delivery = false
+        filter_policy        = null
+        delivery_policy      = null
       },
       {
         protocol             = "sqs"
@@ -82,6 +85,7 @@ run "test_creates_subscriptions" {
         filter_policy = {
           severity = ["critical"]
         }
+        delivery_policy = null
       }
     ]
   }
