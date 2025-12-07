@@ -10,10 +10,14 @@ terraform {
 }
 
 locals {
-  origin_id             = "s3-static-site"
-  logging_bucket_name   = var.logging_enabled ? coalesce(var.logging_bucket_name, "${var.bucket_name}-logs") : null
-  logging_bucket_domain = var.logging_enabled ? (var.create_logging_bucket ? aws_s3_bucket.logs[0].bucket_domain_name : format("%s.s3.amazonaws.com", var.logging_bucket_name)) : null
-  logging_bucket_id     = var.logging_enabled ? (var.create_logging_bucket ? aws_s3_bucket.logs[0].id : var.logging_bucket_name) : null
+  origin_id                     = "s3-static-site"
+  logging_bucket_name_effective = var.logging_enabled ? coalesce(var.logging_bucket_name, "${var.bucket_name}-logs") : null
+  logging_bucket_domain = var.logging_enabled ? (
+    var.create_logging_bucket ?
+    coalesce(try(aws_s3_bucket.logs[0].bucket_domain_name, null), format("%s.s3.amazonaws.com", local.logging_bucket_name_effective)) :
+    format("%s.s3.amazonaws.com", local.logging_bucket_name_effective)
+  ) : null
+  logging_bucket_id = var.logging_enabled ? (var.create_logging_bucket ? try(aws_s3_bucket.logs[0].id, local.logging_bucket_name_effective) : local.logging_bucket_name_effective) : null
 }
 
 data "aws_caller_identity" "current" {}
@@ -24,6 +28,7 @@ resource "aws_kms_key" "this" {
 
   description             = "KMS key for encrypting ${var.bucket_name} static site bucket"
   deletion_window_in_days = 7
+  enable_key_rotation     = true
 
   tags = merge(
     var.tags,
@@ -190,9 +195,9 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   dynamic "logging_config" {
-    for_each = var.logging_enabled && local.logging_bucket_domain != null ? [true] : []
+    for_each = var.logging_enabled ? [true] : []
     content {
-      bucket          = local.logging_bucket_domain
+      bucket          = coalesce(local.logging_bucket_domain, format("%s.s3.amazonaws.com", local.logging_bucket_name_effective))
       include_cookies = var.log_include_cookies
       prefix          = var.log_prefix
     }
@@ -264,13 +269,13 @@ resource "aws_s3_bucket_policy" "origin" {
 
 resource "aws_s3_bucket" "logs" {
   count         = var.logging_enabled && var.create_logging_bucket ? 1 : 0
-  bucket        = local.logging_bucket_name
+  bucket        = local.logging_bucket_name_effective
   force_destroy = var.logging_force_destroy
 
   tags = merge(
     var.tags,
     {
-      Name = local.logging_bucket_name
+      Name = local.logging_bucket_name_effective
     }
   )
 }
@@ -291,6 +296,15 @@ resource "aws_s3_bucket_ownership_controls" "logs" {
 
   rule {
     object_ownership = "ObjectWriter"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "logs" {
+  count  = var.logging_enabled && var.create_logging_bucket ? 1 : 0
+  bucket = aws_s3_bucket.logs[0].id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
