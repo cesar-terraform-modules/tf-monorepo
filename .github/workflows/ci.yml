@@ -96,25 +96,25 @@ jobs:
             python3 << 'EOF'
           import json
           import sys
-          
+
           try:
               with open('trivy-results.sarif', 'r') as f:
                   data = json.load(f)
-              
+
               runs = data.get('runs', [])
               if not runs:
                   print("✅ No runs found in SARIF file.")
                   sys.exit(0)
-              
+
               results = runs[0].get('results', [])
               if len(results) == 0:
                   print("✅ No security issues found in SARIF file. This appears to be a false positive.")
                   sys.exit(0)
-              
+
               # Filter results to only CRITICAL/HIGH severity (error/warning level in SARIF)
               # SARIF levels: error=CRITICAL, warning=HIGH, note=LOW, none=INFO
               critical_high_results = [r for r in results if r.get('level') in ['error', 'warning']]
-              
+
               if len(critical_high_results) == 0:
                   low_severity_count = len([r for r in results if r.get('level') == 'note'])
                   if low_severity_count > 0:
@@ -123,7 +123,7 @@ jobs:
                   else:
                       print("✅ No CRITICAL or HIGH severity issues found.")
                   sys.exit(0)
-              
+
               print(f"❌ Found {len(critical_high_results)} CRITICAL/HIGH severity issue(s):")
               for i, result in enumerate(critical_high_results[:10], 1):  # Show first 10 issues
                   rule_id = result.get('ruleId', 'unknown')
@@ -137,10 +137,10 @@ jobs:
                       region = loc.get('region', {})
                       location_info = f" at {artifact.get('uri', 'unknown')}:{region.get('startLine', '?')}"
                   print(f"  {i}. [{level}] {rule_id}: {message}{location_info}")
-              
+
               if len(critical_high_results) > 10:
                   print(f"  ... and {len(critical_high_results) - 10} more issue(s)")
-              
+
               print("\nPlease review these issues and either:")
               print("1. Fix the security issues in the code")
               print("2. Add false positives to .trivyignore file")
