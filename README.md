@@ -26,165 +26,17 @@ All checks must pass before code can be merged to ensure:
 
 ## Available Modules
 
-### 1. S3 Private Bucket (`modules/s3-private-bucket`)
-Create secure, private S3 buckets with best practices enabled by default.
-
-**Features:**
-- Private by default with all public access blocked
-- Server-side encryption (AES256 or KMS)
-- Optional versioning
-- Lifecycle policies support
-
-**Basic Usage:**
-```hcl
-module "private_bucket" {
-  source = "./modules/s3-private-bucket"
-
-  bucket_name        = "my-private-bucket"
-  versioning_enabled = true
-  
-  tags = {
-    Environment = "production"
-  }
-}
-```
-
-[Full documentation →](./modules/s3-private-bucket/README.md)
-
----
-
-### 2. DynamoDB Global Table (`modules/dynamodb-global-table`)
-Create DynamoDB tables with optional multi-region replication for global applications.
-
-**Features:**
-- Global table replication across regions
-- Flexible billing modes (on-demand or provisioned)
-- Server-side encryption with optional KMS
-- Point-in-time recovery
-- Global Secondary Indexes (GSI) support
-- TTL configuration
-
-**Basic Usage:**
-```hcl
-module "users_table" {
-  source = "./modules/dynamodb-global-table"
-
-  table_name   = "users"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "user_id"
-  
-  attributes = [
-    {
-      name = "user_id"
-      type = "S"
-    }
-  ]
-
-  replica_regions = ["us-west-2", "eu-west-1"]
-  
-  tags = {
-    Environment = "production"
-  }
-}
-```
-
-[Full documentation →](./modules/dynamodb-global-table/README.md)
-
----
-
-### 3. Lambda Function (`modules/lambda-function`)
-Deploy Lambda functions with automatic IAM role creation and CloudWatch logging.
-
-**Features:**
-- Automatic IAM role and policy management
-- CloudWatch Logs integration
-- VPC support for private resource access
-- X-Ray tracing
-- Dead letter queue configuration
-- Function aliases
-- Environment variables
-
-**Basic Usage:**
-```hcl
-module "api_function" {
-  source = "./modules/lambda-function"
-
-  function_name = "api-handler"
-  handler       = "index.handler"
-  runtime       = "python3.11"
-  filename      = "function.zip"
-  
-  timeout     = 30
-  memory_size = 256
-
-  environment_variables = {
-    ENVIRONMENT = "production"
-  }
-
-  tags = {
-    Environment = "production"
-  }
-}
-```
-
-[Full documentation →](./modules/lambda-function/README.md)
-
----
-
-### 4. Fargate ECS with Blue/Green Deployment (`modules/fargate-ecs-bluegreen`)
-Deploy containerized applications on AWS Fargate with CodeDeploy blue/green deployment support.
-
-**Features:**
-- Serverless container orchestration with Fargate
-- Blue/green deployments via AWS CodeDeploy
-- Automatic IAM role creation
-- Load balancer integration (ALB/NLB)
-- Service discovery support
-- Container Insights
-- ECS Exec for debugging
-- EFS volume support
-
-**Basic Usage:**
-```hcl
-module "app_service" {
-  source = "./modules/fargate-ecs-bluegreen"
-
-  cluster_name = "production-cluster"
-  service_name = "my-app"
-  task_family  = "my-app-task"
-
-  task_cpu    = "512"
-  task_memory = "1024"
-
-  container_definitions = [
-    {
-      name      = "app"
-      image     = "nginx:latest"
-      essential = true
-      portMappings = [
-        {
-          containerPort = 80
-          protocol      = "tcp"
-        }
-      ]
-    }
-  ]
-
-  subnet_ids         = ["subnet-12345", "subnet-67890"]
-  security_group_ids = ["sg-12345"]
-
-  enable_blue_green_deployment = true
-  codedeploy_listener_arns     = [aws_lb_listener.main.arn]
-  
-  tags = {
-    Environment = "production"
-  }
-}
-```
-
-[Full documentation →](./modules/fargate-ecs-bluegreen/README.md)
-
----
+- **S3 Private Bucket** (`modules/s3-private-bucket`): Private buckets with blocked public access, SSE (AES256/KMS), optional versioning and lifecycle policies. [Docs](./modules/s3-private-bucket/README.md)
+- **DynamoDB Global Table** (`modules/dynamodb-global-table`): Tables with multi-region replication, flexible billing modes, PITR, and GSI support. [Docs](./modules/dynamodb-global-table/README.md)
+- **Lambda Function** (`modules/lambda-function`): Lambda deploys with IAM roles, logging, VPC support, DLQ, and X-Ray. [Docs](./modules/lambda-function/README.md)
+- **Fargate ECS Blue/Green** (`modules/fargate-ecs-bluegreen`): Fargate service with CodeDeploy blue/green, ALB/NLB wiring, EFS and ECS Exec support. [Docs](./modules/fargate-ecs-bluegreen/README.md)
+- **Networking Basics** (`modules/networking-basics`): VPC with public/private subnets, optional NAT gateways, flow logs, and hardened default SG. [Docs](./modules/networking-basics/README.md)
+- **CloudFront Static Site** (`modules/cloudfront-static-site`): S3 + CloudFront with OAC, minimal security headers, custom domains, logging, and optional WAF. [Docs](./modules/cloudfront-static-site/README.md)
+- **ECR Repository** (`modules/ecr-repository`): Secure ECR repo with immutable tags by default, scan-on-push, optional lifecycle and repository policies. [Docs](./modules/ecr-repository/README.md)
+- **ECS Task IAM** (`modules/ecs-task-iam`): Task/execution roles with opt-in access to DynamoDB, SQS, SNS, SES, STS assume-role, and ECR/CloudWatch. [Docs](./modules/ecs-task-iam/README.md)
+- **SES Email** (`modules/ses-email`): SES identity and reusable summary email template with optional skip verification. [Docs](./modules/ses-email/README.md)
+- **SNS Topic** (`modules/sns-topic`): Standard/FIFO topics with optional KMS, flexible subscriptions (HTTP/HTTPS/SQS), topic/delivery policies. [Docs](./modules/sns-topic/README.md)
+- **SQS Queue** (`modules/sqs-queue`): Standard or FIFO queue with SSE, optional DLQ, tunable timeouts, and policy attachments. [Docs](./modules/sqs-queue/README.md)
 
 ## Requirements
 
