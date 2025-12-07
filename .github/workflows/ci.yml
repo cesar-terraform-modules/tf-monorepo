@@ -46,6 +46,7 @@ jobs:
           - sns-topic
           - networking-basics
           - ecs-task-iam
+          - sqs-queue
       fail-fast: false
     steps:
       - name: Checkout code
