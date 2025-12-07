@@ -39,6 +39,7 @@ jobs:
           - cloudfront-static-site
           - s3-private-bucket
           - dynamodb-global-table
+          - ecr-repository
           - lambda-function
           - fargate-ecs-bluegreen
           - ses-email
