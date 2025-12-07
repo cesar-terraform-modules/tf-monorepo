@@ -40,6 +40,9 @@ jobs:
           - dynamodb-global-table
           - lambda-function
           - fargate-ecs-bluegreen
+          - ses-email
+          - sns-topic
+          - networking-basics
       fail-fast: false
     steps:
       - name: Checkout code
