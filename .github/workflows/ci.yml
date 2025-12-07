@@ -43,6 +43,7 @@ jobs:
           - ses-email
           - sns-topic
           - networking-basics
+          - ecs-task-iam
       fail-fast: false
     steps:
       - name: Checkout code
