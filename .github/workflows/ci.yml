@@ -36,6 +36,7 @@ jobs:
     strategy:
       matrix:
         module:
+          - cloudfront-static-site
           - s3-private-bucket
           - dynamodb-global-table
           - lambda-function
