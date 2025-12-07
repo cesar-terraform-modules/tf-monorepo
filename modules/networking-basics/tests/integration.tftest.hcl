@@ -48,8 +48,14 @@ run "creates_vpc_with_nat_and_route_tables" {
 
   assert {
     condition = anytrue([
-      for rule in aws_default_security_group.this.egress : contains(rule.cidr_blocks, "0.0.0.0/0")
+      for rule in aws_default_security_group.this.egress :
+      contains(rule.cidr_blocks, "10.0.0.0/24") && !contains(rule.cidr_blocks, "0.0.0.0/0")
     ])
-    error_message = "Default security group should allow outbound traffic."
+    error_message = "Default security group should restrict outbound traffic to the VPC CIDR."
+  }
+
+  assert {
+    condition     = length(aws_flow_log.this) == 1
+    error_message = "VPC Flow Logs should be enabled by default."
   }
 }

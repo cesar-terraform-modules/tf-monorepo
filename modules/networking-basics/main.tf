@@ -25,6 +25,9 @@ locals {
 
   public_subnet_cidrs  = local.subnet_cidrs == null ? [] : slice(local.subnet_cidrs, 0, var.az_count)
   private_subnet_cidrs = local.subnet_cidrs == null ? [] : slice(local.subnet_cidrs, var.az_count, var.az_count * 2)
+
+  default_sg_egress_cidr_blocks = length(var.default_sg_egress_cidr_blocks) > 0 ? var.default_sg_egress_cidr_blocks : [var.cidr]
+  default_sg_egress_ipv6_blocks = var.default_sg_egress_ipv6_cidr_blocks
 }
 
 resource "aws_vpc" "this" {
@@ -178,16 +181,83 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[each.key].id
 }
 
+resource "aws_cloudwatch_log_group" "flow_logs" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  name_prefix       = "/aws/vpc/networking-basics-"
+  retention_in_days = var.flow_logs_retention_in_days
+  kms_key_id        = null
+  skip_destroy      = false
+  tags              = merge({ Name = "networking-basics-flow-logs" }, var.tags)
+}
+
+resource "aws_iam_role" "flow_logs" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  name_prefix = "networking-basics-flow-logs-"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy" "flow_logs" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  name_prefix = "networking-basics-flow-logs-"
+  role        = aws_iam_role.flow_logs[count.index].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_flow_log" "this" {
+  count = var.enable_flow_logs ? 1 : 0
+
+  iam_role_arn         = aws_iam_role.flow_logs[count.index].arn
+  log_destination      = aws_cloudwatch_log_group.flow_logs[count.index].arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = var.flow_logs_traffic_type
+  vpc_id               = aws_vpc.this.id
+
+  depends_on = [aws_iam_role_policy.flow_logs]
+}
+
 resource "aws_default_security_group" "this" {
   vpc_id = aws_vpc.this.id
 
   egress {
-    description      = "Allow all outbound traffic"
+    description      = "Restrict outbound traffic to allowed CIDRs"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    cidr_blocks      = local.default_sg_egress_cidr_blocks
+    ipv6_cidr_blocks = local.default_sg_egress_ipv6_blocks
   }
 
   tags = merge(
