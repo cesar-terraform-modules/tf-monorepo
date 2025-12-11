@@ -1,0 +1,35 @@
+name: Publish Modules to StackGen
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Optional version to publish (defaults to derived timestamp)'
+        required: false
+        default: ''
+
+jobs:
+  publish:
+    name: Publish modules to StackGen
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Upload modules
+        uses: sg-tf-demo-org/stackgen-action@cesar
+        with:
+          stackgen_url: ${{ secrets.STACKGEN_URL }}
+          stackgen_token: ${{ secrets.STACKGEN_API_KEY }}
+          modules_dir: modules
+          provider: aws
+          version: ${{ inputs.version }}
+
