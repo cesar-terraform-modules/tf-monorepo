@@ -24,8 +24,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch StackGen action (private repo)
+        uses: actions/checkout@v4
+        with:
+          repository: sg-tf-demo-org/stackgen-action
+          ref: cesar
+          path: .github/actions/stackgen-action
+          token: ${{ secrets.SG_ACTION_PAT }}
+
       - name: Upload modules
-        uses: sg-tf-demo-org/stackgen-action@cesar
+        uses: ./.github/actions/stackgen-action
         with:
           stackgen_url: ${{ secrets.STACKGEN_URL }}
           stackgen_token: ${{ secrets.STACKGEN_API_KEY }}
