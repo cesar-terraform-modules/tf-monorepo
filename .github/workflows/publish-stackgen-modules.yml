@@ -29,6 +29,8 @@ jobs:
         with:
           repository: sg-tf-demo-org/stackgen-action
           ref: cesar
+          fetch-depth: 0
+          clean: true
           path: .github/actions/stackgen-action
           token: ${{ secrets.SG_ACTION_PAT }}
 
