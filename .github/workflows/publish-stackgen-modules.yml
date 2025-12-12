@@ -1,4 +1,4 @@
-name: Publish Modules to StackGen
+name: IaC Publish to StackGen
 
 on:
   push:
@@ -43,3 +43,14 @@ jobs:
           provider: aws
           version: ${{ inputs.version }}
 
+      - name: Update StackGen resource restriction policy
+        run: |
+          set -euo pipefail
+          mapfile -t modules < <(find modules -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+          modules_json=$(printf '%s\n' "${modules[@]}" | jq -R . | jq -s .)
+          modules_json=${modules_json:-[]}
+          jq --argjson modules "$modules_json" '.resources = $modules' stackgen/resource-restriction.json > stackgen/resource-restriction.json.tmp
+          mv stackgen/resource-restriction.json.tmp stackgen/resource-restriction.json
+
+      - name: Upload resource restriction policy
+        run: stackgen upload resource-restriction-policy -p stackgen/resource-restriction.json
