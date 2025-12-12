@@ -46,10 +46,24 @@ jobs:
       - name: Update StackGen resource restriction policy
         run: |
           set -euo pipefail
-          mapfile -t modules < <(find modules -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
-          modules_json=$(printf '%s\n' "${modules[@]}" | jq -R . | jq -s .)
-          modules_json=${modules_json:-[]}
-          jq --argjson modules "$modules_json" '.resources = $modules' stackgen/resource-restriction.json > stackgen/resource-restriction.json.tmp
+          # Resource restriction policies must use resourceType (not label).
+          # For our custom modules, resourceType is derived from the module label (dir name) by:
+          # - lowercasing
+          # - replacing any non [a-z0-9] run with "_"
+          # - trimming leading/trailing "_"
+          mapfile -t module_labels < <(find modules -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+
+          resource_types=()
+          for label in "${module_labels[@]}"; do
+            resource_type="$(printf '%s' "$label" \
+              | tr '[:upper:]' '[:lower:]' \
+              | sed -E 's/[^a-z0-9]+/_/g; s/^_+//; s/_+$//')"
+            [ -n "$resource_type" ] && resource_types+=("$resource_type")
+          done
+
+          resource_types_json=$(printf '%s\n' "${resource_types[@]}" | jq -R . | jq -s .)
+          resource_types_json=${resource_types_json:-[]}
+          jq --argjson resource_types "$resource_types_json" '.resources = $resource_types' stackgen/resource-restriction.json > stackgen/resource-restriction.json.tmp
           mv stackgen/resource-restriction.json.tmp stackgen/resource-restriction.json
 
       - name: Upload resource restriction policy
