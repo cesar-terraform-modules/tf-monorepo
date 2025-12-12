@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: sg-tf-demo-org/stackgen-action
-          ref: cesar
+          ref: main
           fetch-depth: 0
           clean: true
           path: .github/actions/stackgen-action
