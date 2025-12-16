@@ -66,5 +66,8 @@ jobs:
           jq --argjson resource_types "$resource_types_json" '.resources = $resource_types' stackgen/resource-restriction.json > stackgen/resource-restriction.json.tmp
           mv stackgen/resource-restriction.json.tmp stackgen/resource-restriction.json
 
+          echo "Updated StackGen resource restriction policy:"
+          jq . stackgen/resource-restriction.json
+
       - name: Upload resource restriction policy
         run: stackgen upload resource-restriction-policy -p stackgen/resource-restriction.json
