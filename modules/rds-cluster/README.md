@@ -60,6 +60,28 @@ module "rds_cluster" {
 
 ### Using Existing Subnets
 
+When providing subnet IDs directly, the VPC ID will be automatically inferred from the subnets:
+
+```hcl
+module "rds_cluster" {
+  source = "./modules/rds-cluster"
+
+  cluster_identifier = "my-aurora-cluster"
+  engine             = "aurora-postgresql"
+  master_username    = "admin"
+  master_password    = "SecurePassword123!"
+
+  # VPC ID is optional when subnet_ids are provided - it will be inferred automatically
+  subnet_ids = ["subnet-12345678", "subnet-87654321", "subnet-11223344"]
+
+  tags = {
+    Environment = "production"
+  }
+}
+```
+
+Alternatively, you can explicitly provide the VPC ID:
+
 ```hcl
 module "rds_cluster" {
   source = "./modules/rds-cluster"
@@ -191,7 +213,7 @@ module "rds_cluster" {
 |------|-------------|------|---------|:--------:|
 | cluster_identifier | The cluster identifier. If omitted, Terraform will assign a random, unique identifier | `string` | n/a | yes |
 | master_username | Username for the master DB user | `string` | n/a | yes |
-| vpc_id | ID of the VPC where to create the RDS cluster | `string` | n/a | yes |
+| vpc_id | ID of the VPC where to create the RDS cluster. If not provided, will be inferred from subnet_ids. Required when using subnet_filter | `string` | `null` | no |
 | allow_major_version_upgrade | Enable to allow major engine version upgrades when changing engine versions | `bool` | `false` | no |
 | allowed_cidr_blocks | List of CIDR blocks allowed to access the RDS cluster | `list(string)` | `[]` | no |
 | allowed_security_groups | List of security group IDs allowed to access the RDS cluster | `list(string)` | `[]` | no |

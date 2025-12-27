@@ -87,8 +87,9 @@ variable "enabled_cloudwatch_logs_exports" {
 }
 
 variable "vpc_id" {
-  description = "ID of the VPC where to create the RDS cluster"
+  description = "ID of the VPC where to create the RDS cluster. If not provided, will be inferred from subnet_ids"
   type        = string
+  default     = null
 }
 
 variable "subnet_ids" {

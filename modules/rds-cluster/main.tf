@@ -24,6 +24,11 @@ data "aws_subnet" "this" {
 }
 
 locals {
+  # Infer VPC ID from subnets if not provided
+  # If subnet_ids are provided, get VPC ID from the first subnet
+  # Otherwise, use the provided vpc_id (required when using subnet_filter)
+  vpc_id = var.vpc_id != null ? var.vpc_id : (var.subnet_ids != null && length(var.subnet_ids) > 0 ? data.aws_subnet.this[var.subnet_ids[0]].vpc_id : null)
+
   # Use provided subnet IDs or fetch from data source
   subnet_ids_list = var.subnet_ids != null ? var.subnet_ids : data.aws_subnets.this[0].ids
 
@@ -42,6 +47,11 @@ locals {
 
   # Subnet group name
   subnet_group_name = var.subnet_group_name != null ? var.subnet_group_name : "${var.cluster_identifier}-subnet-group"
+}
+
+# Data source to get VPC CIDR block
+data "aws_vpc" "this" {
+  id = local.vpc_id
 }
 
 # DB Subnet Group
@@ -64,7 +74,7 @@ resource "aws_security_group" "this" {
 
   name        = local.security_group_name
   description = var.security_group_description
-  vpc_id      = var.vpc_id
+  vpc_id      = local.vpc_id
 
   tags = merge(
     var.tags,
@@ -100,17 +110,17 @@ resource "aws_security_group_rule" "ingress_sg" {
   description              = "Allow access from security group ${each.value}"
 }
 
-# Security Group Rules - Egress (allow all outbound)
-resource "aws_security_group_rule" "egress_all" {
+# Security Group Rules - Egress (limit to VPC CIDR)
+resource "aws_security_group_rule" "egress_vpc" {
   count = var.create_security_group ? 1 : 0
 
   type              = "egress"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [data.aws_vpc.this.cidr_block]
   security_group_id = aws_security_group.this[0].id
-  description       = "Allow all outbound traffic"
+  description       = "Allow outbound traffic to VPC CIDR"
 }
 
 locals {
@@ -197,6 +207,11 @@ resource "aws_rds_cluster" "this" {
     precondition {
       condition     = length(local.subnet_ids_list) >= 2
       error_message = "At least 2 subnets are required for RDS cluster across multiple availability zones"
+    }
+
+    precondition {
+      condition     = local.vpc_id != null
+      error_message = "VPC ID must be provided either directly via vpc_id variable or inferred from subnet_ids. When using subnet_filter, vpc_id is required."
     }
   }
 }

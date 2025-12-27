@@ -16,6 +16,13 @@ mock_provider "aws" {
       cidr_block        = "10.0.1.0/24"
     }
   }
+
+  mock_data "aws_vpc" {
+    defaults = {
+      id         = "vpc-12345678"
+      cidr_block = "10.0.0.0/16"
+    }
+  }
 }
 
 run "test_basic_cluster_configuration" {
