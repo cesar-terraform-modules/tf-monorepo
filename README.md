@@ -37,6 +37,7 @@ All checks must pass before code can be merged to ensure:
 - **SES Email** (`modules/ses-email`): SES identity and reusable summary email template with optional skip verification. [Docs](./modules/ses-email/README.md)
 - **SNS Topic** (`modules/sns-topic`): Standard/FIFO topics with optional KMS, flexible subscriptions (HTTP/HTTPS/SQS), topic/delivery policies. [Docs](./modules/sns-topic/README.md)
 - **SQS Queue** (`modules/sqs-queue`): Standard or FIFO queue with SSE, optional DLQ, tunable timeouts, and policy attachments. [Docs](./modules/sqs-queue/README.md)
+- **RDS Cluster** (`modules/rds-cluster`): Aurora PostgreSQL/MySQL cluster with configurable read replicas, encryption, monitoring, and security best practices. [Docs](./modules/rds-cluster/README.md)
 
 ## Requirements
 

@@ -195,6 +195,28 @@ modules/
 - Service without blue/green deployment
 - Multi-container task definitions
 
+### RDS Cluster Module
+
+**Unit Tests** (`modules/rds-cluster/tests/unit.tftest.hcl`):
+- Basic cluster configuration
+- Read replica count (zero, multiple)
+- Maximum read replica validation
+- Subnet data source exposure
+- Security group creation (enabled/disabled)
+- Security group ingress rules (CIDR blocks, security groups)
+- Encryption with KMS
+- Enhanced monitoring configuration
+- Performance Insights
+- Backup configuration
+- Tag application
+- Publicly accessible settings
+- Engine version configuration
+
+**Integration Tests** (`modules/rds-cluster/tests/integration.tftest.hcl`):
+- Complete cluster deployment
+- Cluster with read replicas
+- Cluster with subnet filter
+
 ## Test Output
 
 When running tests, you'll see output like:
@@ -231,12 +253,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.6.0
-      
+
       - name: Run Tests
         run: |
           for module in modules/*/; do
@@ -287,12 +309,12 @@ Example:
 ```
 run "test_basic_bucket_configuration"... fail
   Error: Test assertion failed
-  
+
   on tests/unit.tftest.hcl line 15, in run "test_basic_bucket_configuration":
    15:     condition     = aws_s3_bucket.this.bucket == "test-bucket-12345"
       ├────────────────
       │ aws_s3_bucket.this.bucket is "wrong-bucket-name"
-  
+
   Bucket name should match the input variable
 ```
 
