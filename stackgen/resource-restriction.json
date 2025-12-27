@@ -1,5 +1,0 @@
-{
-        "name": "Allow customer modules managed by the tf-monorepo repository",
-        "description": "This restriction will only allow for resources managed by the tf-monorepo repository",
-        "resources": []
-}
