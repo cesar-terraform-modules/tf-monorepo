@@ -8,6 +8,7 @@ This module provisions a CloudFormation StackSet that deploys a StackGen access 
 - Separate sts:TagSession statement for session tagging
 - Managed policy with common IAM provisioning actions for Terraform automation platforms
 - StackSet auto-deployment controls, operation preferences, and OU-based targeting
+- CloudFormation template maintained as a separate file (`stackset-template.yaml`)
 
 ## Usage
 

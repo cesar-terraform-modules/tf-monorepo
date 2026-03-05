@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: StackGen access role for organization accounts via StackSets.
+Parameters:
+  RoleName:
+    Type: String
+  ExternalId:
+    Type: String
+  MaxSessionDuration:
+    Type: Number
+Resources:
+  StackGenIamProvisioningPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub "${RoleName}-provisioning"
+      Description: IAM provisioning actions for Terraform automation platforms.
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - iam:AddRoleToInstanceProfile
+              - iam:AttachRolePolicy
+              - iam:CreateInstanceProfile
+              - iam:CreateOpenIDConnectProvider
+              - iam:CreatePolicy
+              - iam:CreatePolicyVersion
+              - iam:CreateRole
+              - iam:CreateSAMLProvider
+              - iam:DeleteInstanceProfile
+              - iam:DeleteOpenIDConnectProvider
+              - iam:DeletePolicy
+              - iam:DeletePolicyVersion
+              - iam:DeleteRole
+              - iam:DeleteRolePolicy
+              - iam:DeleteSAMLProvider
+              - iam:DetachRolePolicy
+              - iam:Get*
+              - iam:List*
+              - iam:PassRole
+              - iam:PutRolePolicy
+              - iam:RemoveRoleFromInstanceProfile
+              - iam:SetDefaultPolicyVersion
+              - iam:TagInstanceProfile
+              - iam:TagOpenIDConnectProvider
+              - iam:TagPolicy
+              - iam:TagRole
+              - iam:TagSAMLProvider
+              - iam:UntagInstanceProfile
+              - iam:UntagOpenIDConnectProvider
+              - iam:UntagPolicy
+              - iam:UntagRole
+              - iam:UntagSAMLProvider
+              - iam:UpdateAssumeRolePolicy
+              - iam:UpdateOpenIDConnectProviderThumbprint
+              - iam:UpdateRole
+              - iam:UpdateRoleDescription
+              - iam:UpdateSAMLProvider
+            Resource: "*"
+  StackGenAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      MaxSessionDuration: !Ref MaxSessionDuration
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::239541129941:role/stackgen-bastion
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Ref ExternalId
+          - Effect: Allow
+            Principal:
+              AWS: arn:aws:iam::239541129941:role/stackgen-bastion
+            Action: sts:TagSession
+      ManagedPolicyArns:
+        - !Ref StackGenIamProvisioningPolicy
