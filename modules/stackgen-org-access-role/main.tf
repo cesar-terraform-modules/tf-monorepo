@@ -105,7 +105,7 @@ resource "aws_cloudformation_stack_set" "this" {
 resource "aws_cloudformation_stack_set_instance" "this" {
   count = length(var.organizational_unit_ids) > 0 ? 1 : 0
 
-  stack_set_name = var.stack_set_name
+  stack_set_name = aws_cloudformation_stack_set.this.name
   regions        = var.deployment_regions
 
   deployment_targets {
