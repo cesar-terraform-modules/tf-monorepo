@@ -11,7 +11,8 @@ Resources:
   StackGenIamProvisioningPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      ManagedPolicyName: !Sub "${RoleName}-provisioning"
+      ManagedPolicyName:
+        Fn::Sub: "${RoleName}-provisioning"
       Description: IAM provisioning actions for Terraform automation platforms.
       PolicyDocument:
         Version: "2012-10-17"
@@ -59,8 +60,10 @@ Resources:
   StackGenAccessRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Ref RoleName
-      MaxSessionDuration: !Ref MaxSessionDuration
+      RoleName:
+        Ref: RoleName
+      MaxSessionDuration:
+        Ref: MaxSessionDuration
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -70,10 +73,11 @@ Resources:
             Action: sts:AssumeRole
             Condition:
               StringEquals:
-                sts:ExternalId: !Ref ExternalId
+                sts:ExternalId:
+                  Ref: ExternalId
           - Effect: Allow
             Principal:
               AWS: arn:aws:iam::239541129941:role/stackgen-bastion
             Action: sts:TagSession
       ManagedPolicyArns:
-        - !Ref StackGenIamProvisioningPolicy
+        - Ref: StackGenIamProvisioningPolicy
