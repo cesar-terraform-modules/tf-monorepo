@@ -127,6 +127,18 @@ variable "health_check_unhealthy_threshold" {
   }
 }
 
+variable "create_ecs_security_group" {
+  description = "Whether to create an ECS task security group with ingress from the ALB"
+  type        = bool
+  default     = false
+}
+
+variable "ecs_sg_name_prefix" {
+  description = "Name prefix for the ECS task security group. Required when create_ecs_security_group is true"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

@@ -32,3 +32,8 @@ output "https_listener_arn" {
   description = "ARN of the HTTPS listener (null if HTTPS is not enabled)"
   value       = var.enable_https ? aws_lb_listener.https[0].arn : null
 }
+
+output "ecs_security_group_id" {
+  description = "ID of the ECS task security group (null if not created)"
+  value       = var.create_ecs_security_group ? aws_security_group.ecs_tasks[0].id : null
+}

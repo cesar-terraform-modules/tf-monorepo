@@ -350,3 +350,78 @@ run "test_health_check_defaults" {
     error_message = "Health check interval should default to 30"
   }
 }
+
+run "test_ecs_security_group_not_created_by_default" {
+  command = plan
+
+  variables {
+    name       = "test-alb"
+    vpc_id     = "vpc-12345678"
+    subnet_ids = ["subnet-12345678", "subnet-87654321"]
+    target_groups = [
+      {
+        name                 = "test-tg"
+        port                 = 8080
+        protocol             = "HTTP"
+        health_check_path    = "/health"
+        health_check_matcher = "200"
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(aws_security_group.ecs_tasks) == 0
+    error_message = "ECS security group should not be created by default"
+  }
+}
+
+run "test_ecs_security_group_created_when_enabled" {
+  command = plan
+
+  variables {
+    name                       = "test-alb"
+    vpc_id                     = "vpc-12345678"
+    subnet_ids                 = ["subnet-12345678", "subnet-87654321"]
+    create_ecs_security_group  = true
+    ecs_sg_name_prefix         = "myapp-ecs-"
+    target_groups = [
+      {
+        name                 = "test-tg"
+        port                 = 8080
+        protocol             = "HTTP"
+        health_check_path    = "/health"
+        health_check_matcher = "200"
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(aws_security_group.ecs_tasks) == 1
+    error_message = "ECS security group should be created when enabled"
+  }
+
+  assert {
+    condition     = aws_security_group.ecs_tasks[0].name_prefix == "myapp-ecs-"
+    error_message = "ECS security group name prefix should match input"
+  }
+
+  assert {
+    condition     = length(aws_vpc_security_group_ingress_rule.ecs_from_alb) == 1
+    error_message = "Should create ingress rule from ALB to ECS"
+  }
+
+  assert {
+    condition     = length(aws_vpc_security_group_ingress_rule.ecs_self) == 1
+    error_message = "Should create self-referencing ingress rule"
+  }
+
+  assert {
+    condition     = length(aws_vpc_security_group_egress_rule.ecs_all) == 1
+    error_message = "Should create egress-all rule"
+  }
+
+  assert {
+    condition     = aws_security_group.ecs_tasks[0].vpc_id == "vpc-12345678"
+    error_message = "ECS security group should be in the correct VPC"
+  }
+}

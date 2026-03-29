@@ -162,6 +162,53 @@ resource "aws_lb_listener" "https" {
   tags = var.tags
 }
 
+# ECS Task Security Group (optional)
+resource "aws_security_group" "ecs_tasks" {
+  count = var.create_ecs_security_group ? 1 : 0
+
+  name_prefix = var.ecs_sg_name_prefix
+  description = "ECS tasks security group"
+  vpc_id      = var.vpc_id
+
+  tags = merge(var.tags, { Name = "${var.ecs_sg_name_prefix}ecs-tasks" })
+
+  lifecycle {
+    precondition {
+      condition     = !var.create_ecs_security_group || var.ecs_sg_name_prefix != null
+      error_message = "ecs_sg_name_prefix is required when create_ecs_security_group is true"
+    }
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
+  count = var.create_ecs_security_group ? 1 : 0
+
+  security_group_id            = aws_security_group.ecs_tasks[0].id
+  referenced_security_group_id = aws_security_group.this.id
+  ip_protocol                  = "tcp"
+  from_port                    = 0
+  to_port                      = 65535
+  description                  = "Allow all TCP from ALB"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ecs_self" {
+  count = var.create_ecs_security_group ? 1 : 0
+
+  security_group_id            = aws_security_group.ecs_tasks[0].id
+  referenced_security_group_id = aws_security_group.ecs_tasks[0].id
+  ip_protocol                  = "-1"
+  description                  = "Allow all from self"
+}
+
+resource "aws_vpc_security_group_egress_rule" "ecs_all" {
+  count = var.create_ecs_security_group ? 1 : 0
+
+  security_group_id = aws_security_group.ecs_tasks[0].id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  description       = "Allow all outbound"
+}
+
 # Path-based Listener Rules (attached to HTTP forward listener or HTTPS listener)
 resource "aws_lb_listener_rule" "this" {
   for_each = { for rule in var.listener_rules : rule.priority => rule }
