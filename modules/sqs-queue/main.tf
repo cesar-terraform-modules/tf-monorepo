@@ -18,7 +18,7 @@ resource "aws_sqs_queue" "this" {
   max_message_size            = var.max_message_size
   sqs_managed_sse_enabled     = var.kms_key_id == null ? true : null
   kms_master_key_id           = var.kms_key_id
-  redrive_policy              = var.enable_dlq ? jsonencode({ deadLetterTargetArn = local.dlq_arn, maxReceiveCount = var.redrive_max_receive_count }) : null
+  redrive_policy              = var.enable_dlq ? jsonencode({ deadLetterTargetArn = aws_sqs_queue.dlq[0].arn, maxReceiveCount = var.redrive_max_receive_count }) : null
   content_based_deduplication = var.fifo_queue ? var.content_based_deduplication : null
 
   tags = var.tags

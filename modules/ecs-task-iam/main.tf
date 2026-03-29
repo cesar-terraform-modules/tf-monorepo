@@ -2,34 +2,34 @@ locals {
   task_policy_statements = [
     for statement in [
       var.enable_dynamodb && length(var.dynamodb_table_arns) > 0 ? {
-        sid       = "DynamoDBAccess"
-        effect    = "Allow"
-        actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:DescribeTable"]
-        resources = var.dynamodb_table_arns
+        Sid      = "DynamoDBAccess"
+        Effect   = "Allow"
+        Action   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem", "dynamodb:DeleteItem", "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem", "dynamodb:Query", "dynamodb:Scan", "dynamodb:DescribeTable"]
+        Resource = var.dynamodb_table_arns
       } : null,
       var.enable_sqs_send_receive && length(var.sqs_queue_arns) > 0 ? {
-        sid       = "SqsSendReceive"
-        effect    = "Allow"
-        actions   = ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl", "sqs:ChangeMessageVisibility", "sqs:ListDeadLetterSourceQueues"]
-        resources = var.sqs_queue_arns
+        Sid      = "SqsSendReceive"
+        Effect   = "Allow"
+        Action   = ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:GetQueueUrl", "sqs:ChangeMessageVisibility", "sqs:ListDeadLetterSourceQueues"]
+        Resource = var.sqs_queue_arns
       } : null,
       var.enable_sns_publish && length(var.sns_topic_arns) > 0 ? {
-        sid       = "SnsPublish"
-        effect    = "Allow"
-        actions   = ["sns:Publish"]
-        resources = var.sns_topic_arns
+        Sid      = "SnsPublish"
+        Effect   = "Allow"
+        Action   = ["sns:Publish"]
+        Resource = var.sns_topic_arns
       } : null,
       var.enable_ses_send_email && length(var.ses_identity_arns) > 0 ? {
-        sid       = "SesSendEmail"
-        effect    = "Allow"
-        actions   = ["ses:SendEmail", "ses:SendRawEmail", "ses:SendTemplatedEmail", "ses:SendBulkTemplatedEmail"]
-        resources = var.ses_identity_arns
+        Sid      = "SesSendEmail"
+        Effect   = "Allow"
+        Action   = ["ses:SendEmail", "ses:SendRawEmail", "ses:SendTemplatedEmail", "ses:SendBulkTemplatedEmail"]
+        Resource = var.ses_identity_arns
       } : null,
       var.enable_sts_assume_role && length(var.assumable_role_arns) > 0 ? {
-        sid       = "AssumeDelegatedRoles"
-        effect    = "Allow"
-        actions   = ["sts:AssumeRole"]
-        resources = var.assumable_role_arns
+        Sid      = "AssumeDelegatedRoles"
+        Effect   = "Allow"
+        Action   = ["sts:AssumeRole"]
+        Resource = var.assumable_role_arns
       } : null
     ] : statement if statement != null
   ]
@@ -37,22 +37,22 @@ locals {
   execution_policy_statements = [
     for statement in [
       var.enable_cloudwatch_logs && length(var.cloudwatch_log_group_arns) > 0 ? {
-        sid       = "CloudWatchLogs"
-        effect    = "Allow"
-        actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
-        resources = var.cloudwatch_log_group_arns
+        Sid      = "CloudWatchLogs"
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = var.cloudwatch_log_group_arns
       } : null,
       var.enable_ecr_pull && length(var.ecr_repository_arns) > 0 ? {
-        sid       = "EcrGetAuthToken"
-        effect    = "Allow"
-        actions   = ["ecr:GetAuthorizationToken"]
-        resources = ["*"]
+        Sid      = "EcrGetAuthToken"
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = ["*"]
       } : null,
       var.enable_ecr_pull && length(var.ecr_repository_arns) > 0 ? {
-        sid       = "EcrPullAccess"
-        effect    = "Allow"
-        actions   = ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer", "ecr:BatchCheckLayerAvailability", "ecr:DescribeImages", "ecr:DescribeRepositories"]
-        resources = var.ecr_repository_arns
+        Sid      = "EcrPullAccess"
+        Effect   = "Allow"
+        Action   = ["ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer", "ecr:BatchCheckLayerAvailability", "ecr:DescribeImages", "ecr:DescribeRepositories"]
+        Resource = var.ecr_repository_arns
       } : null
     ] : statement if statement != null
   ]
