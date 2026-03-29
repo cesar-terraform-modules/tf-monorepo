@@ -56,6 +56,48 @@ run "integration_topic_with_http_and_sqs" {
   }
 }
 
+run "integration_topic_with_lambda_and_email" {
+  command = plan
+
+  variables {
+    topic_name = "retroboard-multi-protocol"
+    subscriptions = [
+      {
+        protocol = "lambda"
+        endpoint = "arn:aws:lambda:us-east-1:123456789012:function:process-alert"
+      },
+      {
+        protocol = "email"
+        endpoint = "alerts@example.com"
+      },
+      {
+        protocol             = "sqs"
+        endpoint             = "arn:aws:sqs:us-east-1:123456789012:retroboard-alerts-queue"
+        raw_message_delivery = true
+      }
+    ]
+    tags = {
+      Environment = "integration"
+      Service     = "retroboard"
+    }
+  }
+
+  assert {
+    condition     = length(aws_sns_topic_subscription.this) == 3
+    error_message = "Lambda, email, and SQS subscriptions should all be created"
+  }
+
+  assert {
+    condition     = toset([for s in aws_sns_topic_subscription.this : s.protocol]) == toset(["lambda", "email", "sqs"])
+    error_message = "All three subscription protocols should be present"
+  }
+
+  assert {
+    condition     = length(aws_lambda_permission.sns_invoke) == 1
+    error_message = "Exactly one Lambda permission should be created (only for the Lambda subscription)"
+  }
+}
+
 run "integration_fifo_topic_with_kms" {
   command = plan
 

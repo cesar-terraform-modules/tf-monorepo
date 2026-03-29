@@ -13,6 +13,7 @@ This module creates an AWS ECS Fargate service with optional CodeDeploy blue/gre
 - **ECS Exec**: Optional ECS Exec for debugging
 - **EFS volume support**: Mount EFS volumes to containers
 - **Flexible deployment configurations**: Multiple CodeDeploy deployment strategies
+- **CloudWatch Log Group**: Optional managed log group with configurable retention
 
 ## Important Notes
 
@@ -256,6 +257,9 @@ module "app_with_efs" {
 | codedeploy_test_listener_arns | ALB/NLB listener ARNs for test traffic | `list(string)` | `null` | no |
 | codedeploy_blue_target_group_name | Name of the blue target group | `string` | `null` | no |
 | codedeploy_green_target_group_name | Name of the green target group | `string` | `null` | no |
+| create_log_group | Whether to create a CloudWatch log group for the service | `bool` | `true` | no |
+| log_group_name | Name of the CloudWatch log group. Defaults to /ecs/{service_name} | `string` | `null` | no |
+| log_retention_in_days | Number of days to retain log events in the log group | `number` | `30` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
 
 ## Outputs
@@ -275,6 +279,8 @@ module "app_with_efs" {
 | codedeploy_app_name | The name of the CodeDeploy application |
 | codedeploy_deployment_group_name | The name of the CodeDeploy deployment group |
 | codedeploy_role_arn | The ARN of the CodeDeploy IAM role |
+| log_group_name | The name of the CloudWatch log group |
+| log_group_arn | The ARN of the CloudWatch log group |
 
 ## CodeDeploy Deployment Configurations
 

@@ -246,3 +246,13 @@ resource "aws_iam_role_policy_attachment" "codedeploy_policy" {
   role       = aws_iam_role.codedeploy[0].name
   policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
 }
+
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "this" {
+  count = var.create_log_group ? 1 : 0
+
+  name              = coalesce(var.log_group_name, "/ecs/${var.service_name}")
+  retention_in_days = var.log_retention_in_days
+
+  tags = var.tags
+}

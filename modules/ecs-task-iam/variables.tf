@@ -44,14 +44,14 @@ variable "sns_topic_arns" {
   default     = []
 }
 
-variable "enable_ses_templated_email" {
-  description = "Enable SES templated email permissions for the provided identities"
+variable "enable_ses_send_email" {
+  description = "Enable SES email permissions (templated and non-templated) for the provided identities"
   type        = bool
   default     = false
 }
 
 variable "ses_identity_arns" {
-  description = "List of SES identity ARNs allowed for templated email sending"
+  description = "List of SES identity ARNs allowed for email sending"
   type        = list(string)
   default     = []
 }

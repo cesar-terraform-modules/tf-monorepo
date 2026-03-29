@@ -59,3 +59,20 @@ resource "aws_sns_topic_subscription" "this" {
   filter_policy        = each.value.filter_policy != null ? jsonencode(each.value.filter_policy) : null
   delivery_policy      = each.value.delivery_policy
 }
+
+locals {
+  lambda_subscriptions = {
+    for idx, sub in local.subscriptions : idx => sub
+    if sub.protocol == "lambda"
+  }
+}
+
+resource "aws_lambda_permission" "sns_invoke" {
+  for_each = local.lambda_subscriptions
+
+  statement_id  = "AllowSNSInvoke-${var.topic_name}-${each.key}"
+  action        = "lambda:InvokeFunction"
+  function_name = each.value.endpoint
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.this.arn
+}

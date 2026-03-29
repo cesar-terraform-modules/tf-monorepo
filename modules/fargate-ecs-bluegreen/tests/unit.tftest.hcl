@@ -483,6 +483,99 @@ run "test_blue_green_deployment_disabled" {
   }
 }
 
+run "test_log_group_created_by_default" {
+  command = plan
+
+  variables {
+    cluster_name = "test-cluster"
+    service_name = "test-service"
+    task_family  = "test-task"
+
+    container_definitions = [
+      {
+        name  = "app"
+        image = "app:latest"
+      }
+    ]
+
+    subnet_ids         = ["subnet-12345"]
+    security_group_ids = ["sg-12345"]
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_log_group.this) == 1
+    error_message = "Log group should be created by default"
+  }
+
+  assert {
+    condition     = aws_cloudwatch_log_group.this[0].name == "/ecs/test-service"
+    error_message = "Log group name should default to /ecs/{service_name}"
+  }
+
+  assert {
+    condition     = aws_cloudwatch_log_group.this[0].retention_in_days == 30
+    error_message = "Log retention should default to 30 days"
+  }
+}
+
+run "test_log_group_custom_name_and_retention" {
+  command = plan
+
+  variables {
+    cluster_name          = "test-cluster"
+    service_name          = "test-service"
+    task_family           = "test-task"
+    log_group_name        = "/custom/log-group"
+    log_retention_in_days = 90
+
+    container_definitions = [
+      {
+        name  = "app"
+        image = "app:latest"
+      }
+    ]
+
+    subnet_ids         = ["subnet-12345"]
+    security_group_ids = ["sg-12345"]
+  }
+
+  assert {
+    condition     = aws_cloudwatch_log_group.this[0].name == "/custom/log-group"
+    error_message = "Log group should use custom name"
+  }
+
+  assert {
+    condition     = aws_cloudwatch_log_group.this[0].retention_in_days == 90
+    error_message = "Log retention should be 90 days"
+  }
+}
+
+run "test_log_group_disabled" {
+  command = plan
+
+  variables {
+    cluster_name     = "test-cluster"
+    service_name     = "test-service"
+    task_family      = "test-task"
+    create_log_group = false
+
+    container_definitions = [
+      {
+        name  = "app"
+        image = "app:latest"
+      }
+    ]
+
+    subnet_ids         = ["subnet-12345"]
+    security_group_ids = ["sg-12345"]
+  }
+
+  assert {
+    condition     = length(aws_cloudwatch_log_group.this) == 0
+    error_message = "Log group should not be created when create_log_group is false"
+  }
+}
+
 run "test_tags_are_applied" {
   command = plan
 

@@ -21,7 +21,7 @@ run "task_policy_only_sns" {
     enable_ecr_pull            = true
     enable_dynamodb            = false
     enable_sqs_send_receive    = false
-    enable_ses_templated_email = false
+    enable_ses_send_email      = false
     enable_sts_assume_role     = false
   }
 

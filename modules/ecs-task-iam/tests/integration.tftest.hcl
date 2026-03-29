@@ -19,7 +19,7 @@ run "integration_full_permissions" {
     sqs_queue_arns             = ["arn:aws:sqs:us-east-1:333333333333:queue/email"]
     enable_sns_publish         = true
     sns_topic_arns             = ["arn:aws:sns:us-east-1:333333333333:topic/slack"]
-    enable_ses_templated_email = true
+    enable_ses_send_email      = true
     ses_identity_arns          = ["arn:aws:ses:us-east-1:333333333333:identity/example.com"]
     cloudwatch_log_group_arns  = ["arn:aws:logs:us-east-1:333333333333:log-group:/ecs/integration:*"]
     ecr_repository_arns        = ["arn:aws:ecr:us-east-1:333333333333:repository/integration"]
@@ -52,7 +52,7 @@ run "integration_full_permissions" {
   }
 
   assert {
-    condition     = toset([for s in jsondecode(aws_iam_policy.task_policy.policy).Statement : s.sid]) == toset(["DynamoDBAccess", "SqsSendReceive", "SnsPublish", "SesTemplatedEmail", "AssumeDelegatedRoles"])
+    condition     = toset([for s in jsondecode(aws_iam_policy.task_policy.policy).Statement : s.sid]) == toset(["DynamoDBAccess", "SqsSendReceive", "SnsPublish", "SesSendEmail", "AssumeDelegatedRoles"])
     error_message = "Task policy should include all enabled statements"
   }
 

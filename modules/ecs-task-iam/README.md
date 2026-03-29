@@ -4,7 +4,7 @@ This module provisions IAM task and execution roles for ECS services with least-
 
 ## Features
 
-- Task role with opt-in access to DynamoDB tables, SQS queues, SNS topics, SES templated email, and delegated role assumption
+- Task role with opt-in access to DynamoDB tables, SQS queues, SNS topics, SES email (templated and non-templated), and delegated role assumption
 - Execution role scoped to CloudWatch Logs write and ECR image pulls
 - Policies limited to provided ARNs, including separate ECR auth token handling
 - Consistent tagging through a shared `tags` map
@@ -23,7 +23,7 @@ module "ecs_task_iam" {
   sqs_queue_arns          = ["arn:aws:sqs:us-east-1:123456789012:email-queue"]
   enable_sns_publish      = true
   sns_topic_arns          = ["arn:aws:sns:us-east-1:123456789012:slack-alerts"]
-  enable_ses_templated_email = true
+  enable_ses_send_email = true
   ses_identity_arns          = ["arn:aws:ses:us-east-1:123456789012:identity/example.com"]
   enable_sts_assume_role     = true
   assumable_role_arns        = ["arn:aws:iam::123456789012:role/cross-account-role"]
@@ -56,8 +56,8 @@ module "ecs_task_iam" {
 | sqs_queue_arns | List of SQS queue ARNs the task role can interact with | `list(string)` | `[]` | no |
 | enable_sns_publish | Enable SNS publish permissions for the provided topics | `bool` | `false` | no |
 | sns_topic_arns | List of SNS topic ARNs the task role can publish to | `list(string)` | `[]` | no |
-| enable_ses_templated_email | Enable SES templated email permissions for the provided identities | `bool` | `false` | no |
-| ses_identity_arns | List of SES identity ARNs allowed for templated email sending | `list(string)` | `[]` | no |
+| enable_ses_send_email | Enable SES email (templated and non-templated) permissions for the provided identities | `bool` | `false` | no |
+| ses_identity_arns | List of SES identity ARNs allowed for email sending | `list(string)` | `[]` | no |
 | enable_sts_assume_role | Enable sts:AssumeRole for the provided role ARNs | `bool` | `false` | no |
 | assumable_role_arns | List of role ARNs the task role is allowed to assume | `list(string)` | `[]` | no |
 | enable_cloudwatch_logs | Enable CloudWatch Logs permissions on the provided log groups for the execution role | `bool` | `true` | no |

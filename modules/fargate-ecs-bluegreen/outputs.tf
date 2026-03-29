@@ -62,3 +62,13 @@ output "codedeploy_role_arn" {
   description = "The ARN of the CodeDeploy IAM role"
   value       = var.enable_blue_green_deployment && var.create_codedeploy_role ? aws_iam_role.codedeploy[0].arn : null
 }
+
+output "log_group_name" {
+  description = "The name of the CloudWatch log group"
+  value       = var.create_log_group ? aws_cloudwatch_log_group.this[0].name : null
+}
+
+output "log_group_arn" {
+  description = "The ARN of the CloudWatch log group"
+  value       = var.create_log_group ? aws_cloudwatch_log_group.this[0].arn : null
+}

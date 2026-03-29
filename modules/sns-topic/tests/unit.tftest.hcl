@@ -111,6 +111,72 @@ run "test_creates_subscriptions" {
   }
 }
 
+run "test_lambda_subscription_with_permission" {
+  command = plan
+
+  variables {
+    topic_name = "retroboard-lambda-events"
+    subscriptions = [
+      {
+        protocol = "lambda"
+        endpoint = "arn:aws:lambda:us-east-1:123456789012:function:process-event"
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(aws_sns_topic_subscription.this) == 1
+    error_message = "One Lambda subscription should be created"
+  }
+
+  assert {
+    condition     = contains([for s in aws_sns_topic_subscription.this : s.protocol], "lambda")
+    error_message = "Lambda subscription should be present"
+  }
+
+  assert {
+    condition     = length(aws_lambda_permission.sns_invoke) == 1
+    error_message = "Lambda permission should be created for the Lambda subscription"
+  }
+
+  assert {
+    condition = anytrue([
+      for p in aws_lambda_permission.sns_invoke :
+      p.action == "lambda:InvokeFunction" && p.principal == "sns.amazonaws.com"
+    ])
+    error_message = "Lambda permission should grant sns.amazonaws.com invoke access"
+  }
+}
+
+run "test_email_subscription_no_lambda_permission" {
+  command = plan
+
+  variables {
+    topic_name = "retroboard-email-alerts"
+    subscriptions = [
+      {
+        protocol = "email"
+        endpoint = "alerts@example.com"
+      }
+    ]
+  }
+
+  assert {
+    condition     = length(aws_sns_topic_subscription.this) == 1
+    error_message = "One email subscription should be created"
+  }
+
+  assert {
+    condition     = contains([for s in aws_sns_topic_subscription.this : s.protocol], "email")
+    error_message = "Email subscription should be present"
+  }
+
+  assert {
+    condition     = length(aws_lambda_permission.sns_invoke) == 0
+    error_message = "No Lambda permission should be created for email subscriptions"
+  }
+}
+
 run "test_kms_and_policies" {
   command = plan
 

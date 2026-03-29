@@ -52,9 +52,9 @@ variable "subscriptions" {
   validation {
     condition = alltrue([
       for s in var.subscriptions :
-      contains(["http", "https", "sqs"], lower(s.protocol))
+      contains(["http", "https", "sqs", "lambda", "email"], lower(s.protocol))
     ])
-    error_message = "subscriptions.protocol must be one of http, https, or sqs"
+    error_message = "subscriptions.protocol must be one of http, https, sqs, lambda, or email"
   }
 
   validation {

@@ -19,10 +19,10 @@ locals {
         actions   = ["sns:Publish"]
         resources = var.sns_topic_arns
       } : null,
-      var.enable_ses_templated_email && length(var.ses_identity_arns) > 0 ? {
-        sid       = "SesTemplatedEmail"
+      var.enable_ses_send_email && length(var.ses_identity_arns) > 0 ? {
+        sid       = "SesSendEmail"
         effect    = "Allow"
-        actions   = ["ses:SendTemplatedEmail", "ses:SendBulkTemplatedEmail"]
+        actions   = ["ses:SendEmail", "ses:SendRawEmail", "ses:SendTemplatedEmail", "ses:SendBulkTemplatedEmail"]
         resources = var.ses_identity_arns
       } : null,
       var.enable_sts_assume_role && length(var.assumable_role_arns) > 0 ? {
